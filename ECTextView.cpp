@@ -37,7 +37,7 @@ void ECTextView :: AddRow(const std::string &strRow, int row)
     TextImp->AddRow(strRow);
 }
 
-void ECTextView :: AddRows(std::vector<std::string> rows, int start)
+void ECTextView :: AddRows(std::vector<std::string> rows, std::vector<int> lineNumbers)
 {
     TextImp->InitRows();
     TextImp->ClearColor();
@@ -72,13 +72,13 @@ void LineNumberTextView :: AddRow(const std::string &strRow, int row)
     view->AddRow(strRow, row);
 }
 
-void LineNumberTextView :: AddRows(std::vector<std::string> rows, int start)
+void LineNumberTextView :: AddRows(std::vector<std::string> rows, std::vector<int> lineNumbers)
 {
     view->InitRows();
     view->ClearColor();
     int index = 0;
 
-    std::vector<std::string> embellishedDoc = Embellish(rows, GetColNumInView(), start);
+    std::vector<std::string> embellishedDoc = Embellish(rows, GetColNumInView(), lineNumbers);
 
     for (auto row : embellishedDoc)
     {
@@ -86,29 +86,20 @@ void LineNumberTextView :: AddRows(std::vector<std::string> rows, int start)
     }
 }
 
-std::vector<std::string> LineNumberTextView :: Embellish(std::vector<std::string> &rows, int screenWidth, int start)
+std::vector<std::string> LineNumberTextView :: Embellish(std::vector<std::string> &rows, int screenWidth, std::vector<int> lineNumbers)
 {
-    std::vector<std::string> embellishedDoc = view->Embellish(rows, screenWidth, start);
+    std::vector<std::string> embellishedDoc = view->Embellish(rows, screenWidth, lineNumbers);
 
-    bool hasLineNumber = true;
-    int count = start + 1;
-    unsigned int i = 0 + view->YOffset();
-    unsigned int end = embellishedDoc.size() - view->YOffset();
+    if (rows.size() != lineNumbers.size()) return embellishedDoc;
 
-    for (; i < end; ++i)
-    {   
-        std::string line = embellishedDoc[i];
-        int originalSize = line.size();
-
-        if (originalSize <= view->GetColNumInView() && hasLineNumber == true)
-        {
-            std::string lineNumber = std::to_string(count++);
-            embellishedDoc[i] = std::string(6 - lineNumber.size(), ' ') + lineNumber + std::string(" ") + line;
-            hasLineNumber = false;
-
-        } else (embellishedDoc[i] = std::string("       ") + line);
-
-        if (originalSize < view->GetColNumInView()) hasLineNumber = true;
+    for (unsigned int i = 0; i < lineNumbers.size(); ++i)
+    {
+       if (lineNumbers[i] == -1 ) embellishedDoc[i] = std::string("       ") + embellishedDoc[i];
+       else
+       {
+            std::string lineNumber = std::to_string(lineNumbers[i]);
+            embellishedDoc[i] = std::string(6 - lineNumber.size(), ' ') + lineNumber + std::string(" ") + embellishedDoc[i];
+       }
     }
     return embellishedDoc;
 }
@@ -132,27 +123,20 @@ void BorderTextView :: AddRow(const std::string &strRow, int row)
     view->AddRow(strRow, row);
 }
 
-void BorderTextView :: AddRows(std::vector<std::string> rows, int start)
+void BorderTextView :: AddRows(std::vector<std::string> rows, std::vector<int> lineNumbers)
 {
     view->InitRows();
     view->ClearColor();
 
     int index = 0;
-    std::vector<std::string> embellishedDoc = Embellish(rows, GetColNumInView(), start);
+    std::vector<std::string> embellishedDoc = Embellish(rows, GetColNumInView(), lineNumbers);
     for (auto row : embellishedDoc) AddRow(row, index++);
 }
 
-std::vector<std::string> BorderTextView :: Embellish(std::vector<std::string> &rows, int screenWidth, int start)
+std::vector<std::string> BorderTextView :: Embellish(std::vector<std::string> &rows, int screenWidth, std::vector<int> lineNumbers)
 {
-    std::vector<std::string> embellishedDoc = view->Embellish(rows, screenWidth, start);
+    std::vector<std::string> embellishedDoc = view->Embellish(rows, screenWidth, lineNumbers);
 
-    for (unsigned int i = 0; i < embellishedDoc.size(); ++i)
-    {
-        embellishedDoc[i] = std::string("| ") + embellishedDoc[i] + std::string(screenWidth - embellishedDoc[i].size(), ' ') + std::string(" |");
-    }
-    std::string verticalBorder = std::string(1, ' ') + std::string(screenWidth + 2, '-');
-    embellishedDoc.insert(embellishedDoc.begin(), verticalBorder);
-    embellishedDoc.push_back(verticalBorder);
     return embellishedDoc;
 }
 

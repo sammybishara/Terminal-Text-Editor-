@@ -38,9 +38,9 @@ public:
     virtual void AddRow(const std::string &strRow, int row);
     
     // ADDS an entire set of Rows
-    virtual void AddRows(std::vector<std::string> rows, int start);
+    virtual void AddRows(std::vector<std::string> rows, std::vector<int> lineNumbers);
 
-    virtual std::vector<std::string> Embellish(std::vector<std::string> &rows, int screenWidth, int start) { return rows; }
+    virtual std::vector<std::string> Embellish(std::vector<std::string> &rows, int screenWidth, std::vector<int> lineNumbers) { return rows; }
 
     // Get number of rows in view
     virtual int GetRowNumInView() const { return TextImp->GetRowNumInView(); }
@@ -128,9 +128,9 @@ public:
     void AddRow(const std::string &strRow, int row);
     
     // ADDS an entire set of Rows
-    void AddRows(std::vector<std::string> rows, int start);
+    void AddRows(std::vector<std::string> rows, std::vector<int> lineNumbers);
 
-    std::vector<std::string> Embellish(std::vector<std::string> &rows, int screenWidth, int start);
+    std::vector<std::string> Embellish(std::vector<std::string> &rows, int screenWidth, std::vector<int> lineNumbers);
 
     // Get number of rows in view
     int GetRowNumInView() const { return view->GetRowNumInView(); }
@@ -215,9 +215,9 @@ public:
     void AddRow(const std::string &strRow, int row);
     
     // ADDS an entire set of Rows
-    void AddRows(std::vector<std::string> rows, int start);
+    void AddRows(std::vector<std::string> rows, std::vector<int> lineNumbers);
 
-    std::vector<std::string> Embellish(std::vector<std::string> &rows, int screenWidth, int start);
+    std::vector<std::string> Embellish(std::vector<std::string> &rows, int screenWidth, std::vector<int> lineNumbers);
 
     // Get number of rows in view
     int GetRowNumInView() const { return view->GetRowNumInView() - 2; }
