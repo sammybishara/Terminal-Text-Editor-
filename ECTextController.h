@@ -33,7 +33,7 @@ public:
     void Show(){ view->Show();}
 
     // add a character
-    void addChar(char ch);
+    void AddChar(char ch);
 
     // Refreshs the cursors
     void RefreshText();
@@ -44,24 +44,27 @@ public:
     // function that decides whether to delete a character or merge a line
     void Delete(); 
 
+    // function for coppying the current row of the cursor 
+    void Copy();
+
     // moves the cursour left
-    void moveLeft();
+    void MoveLeft();
 
     // moves the cursor right
-    void moveRight();
+    void MoveRight();
 
     // moves the cursor down
-    void moveDown();
+    void MoveDown();
 
     // moves the cursor up
-    void moveUp();
+    void MoveUp();
 
     // splits the current Line into 2
-    void breakLine();
+    void BreakLine();
     // changes current mode to either command mode or edit mode 
-    void changeMode(int newMode);
+    void ChangeMode(int newMode);
 
-    int getMode() {return mode;}
+    int GetMode() {return mode;}
 
     // undo last command
     void Undo() { commandH->Undo(); }
@@ -76,9 +79,9 @@ public:
 private:
     // removes a char
     // method is private since delete will call it if it decides delete is possible 
-    void removeChar();
+    void RemoveChar();
     // merges the current line with the line directly before it 
-    void mergeLine();
+    void MergeLine();
 
     void ReadFromFile();
 
@@ -89,6 +92,7 @@ private:
     Cursor *cursor;
     int mode;
     std::string file;
+    std::string copiedLine;
     bool lineNumbers;
     bool borders;
 };

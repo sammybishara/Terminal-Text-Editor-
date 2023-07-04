@@ -44,7 +44,7 @@ ECTextCtrl :: ~ECTextCtrl()
 }
 
 // creates and executes a new add text command and moves cursor to the right 
-void ECTextCtrl :: addChar(char ch)
+void ECTextCtrl :: AddChar(char ch)
 {
     InsertTextCommand *addText = new InsertTextCommand(view, model, ch, cursor);
     cmdSet->ExecuteCmd(addText);
@@ -61,11 +61,18 @@ void ECTextCtrl :: Delete()
 
     if (x == 0 && y == 0) return;
     // moves cursor for backspace merge line if current column is 0 and row is not row 0, does nothing if cursor is at 0, 0
-    else if (x == 0 && y != 0) mergeLine(); 
-    else removeChar();
+    else if (x == 0 && y != 0) MergeLine(); 
+    else RemoveChar();
 }
 
-void ECTextCtrl :: removeChar()
+void ECTextCtrl :: Copy()
+{
+    std::string fullRow = model->GetRow(cursor->GetCursorY());
+    int pos = cursor->GetCursorX() - view->GetCursorX();
+    copiedLine = fullRow.substr(pos, view->GetColNumInView());
+}
+
+void ECTextCtrl :: RemoveChar()
 {
     RemoveTextCommand *rText = new RemoveTextCommand(view, model, cursor);
     cmdSet->ExecuteCmd(rText);
@@ -76,7 +83,7 @@ void ECTextCtrl :: removeChar()
 }
 
 // moves the cursor left 
-void ECTextCtrl :: moveLeft()
+void ECTextCtrl :: MoveLeft()
 {
     // checks if cursor is not at beginning of row, else move left
     if (model->GetSize() == 0) return;
@@ -85,7 +92,7 @@ void ECTextCtrl :: moveLeft()
 }
 
 // moves cursor right 
-void ECTextCtrl :: moveRight()
+void ECTextCtrl :: MoveRight()
 {
     if (model->GetSize() == 0) return;
     // checks if cursor is not greater than size() of current row, else move right 
@@ -94,10 +101,9 @@ void ECTextCtrl :: moveRight()
 }
 
 // moves cursor down
-void ECTextCtrl :: moveDown()
+void ECTextCtrl :: MoveDown()
 {
     if (model->GetSize() == 0) return;
-
 
     int rows = model->GetRowsOccupied(cursor->GetCursorY(), view->GetColNumInView());
     // moves y down if possible, checks if x is greater than new row's size, if it set it to the size of the new row
@@ -116,7 +122,7 @@ void ECTextCtrl :: moveDown()
 }
 
 // moves cursor up 
-void ECTextCtrl :: moveUp()
+void ECTextCtrl :: MoveUp()
 {   
     if (model->GetSize() == 0 ) return;
 
@@ -134,7 +140,7 @@ void ECTextCtrl :: moveUp()
 }
 
 // breaks line when user hits enter 
-void ECTextCtrl :: breakLine()
+void ECTextCtrl :: BreakLine()
 {
     BreakLineCommand *breakL = new BreakLineCommand(view, model, cursor);
     cmdSet->ExecuteCmd(breakL);
@@ -147,7 +153,7 @@ void ECTextCtrl :: breakLine()
 
 
 // merges line with previous line when backspace is hit and column is 0 
-void ECTextCtrl :: mergeLine()
+void ECTextCtrl :: MergeLine()
 {
     int newX = model->GetRow(cursor->GetCursorY() - 1).size();
     MergeLineCommand *mergeC = new MergeLineCommand(view, model, cursor);
@@ -160,7 +166,7 @@ void ECTextCtrl :: mergeLine()
 }
 
 // changes mode to the oposite mode 
-void ECTextCtrl :: changeMode(int newMode)
+void ECTextCtrl :: ChangeMode(int newMode)
 {
     mode = newMode;
     view->ClearStatusRows();
