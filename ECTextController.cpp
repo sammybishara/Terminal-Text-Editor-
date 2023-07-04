@@ -1,8 +1,7 @@
 #include "ECTextController.h"
 
 // reads the lines from the given file and uploads it to document and view
-ECTextCtrl :: ECTextCtrl(ECTextView *textView, ECTextModel *textModel, const std::string filename) :
-view(textView),
+ECTextCtrl :: ECTextCtrl(TextView *textView, ECTextModel *textModel, const std::string filename) :
 model(textModel),
 mode(COMMAND_MODE),
 file(filename),
@@ -10,6 +9,7 @@ cmdSet(NULL),
 lineNumbers(false),
 borders(false)
 {
+    view = new TextViewDec(textView);
     commandH = new ECCommandHistory();
     cursor = new Cursor();
     // add a status bar
@@ -32,6 +32,7 @@ void ECTextCtrl :: ReadFromFile()
 
 ECTextCtrl :: ~ECTextCtrl()
 {
+    delete view;
     delete commandH;
     delete cursor;
     // if there is an empty command set delete it
@@ -103,9 +104,10 @@ void ECTextCtrl :: moveDown()
     if (cursor->GetCursorY() + 1 < model->GetSize()) cursor->SetCursorY(cursor->GetCursorY() + 1);
     if (model->GetRow(cursor->GetCursorY()).size() < cursor->GetCursorX()) cursor->SetCursorX(model->GetRow(cursor->GetCursorY()).size());
 
-    std::vector<std::string> currentRows = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
+    std::pair<std::vector<std::string>, std::vector<int> > pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
+    std::vector<std::string> currentRows = pair.first;
 
-    if (currentRows.size() - 1 - view->YOffset() - rows < view->GetCursorY()) 
+    if (currentRows.size() - 1 - view->YOffset() - rows < view->GetCursorY() && cursor->GetCursorY() < model->GetSize() - 1) 
     {
         model->MoveDown(view->GetColNumInView());
         RefreshText();
@@ -181,24 +183,44 @@ void ECTextCtrl :: changeMode(int newMode)
 
 void ECTextCtrl :: ToggleLineNumbers()
 {
-    if (dynamic_cast<LineNumberTextView*>(view)) view = view->PreviousView();
-    else view = new LineNumberTextView(view);
-
-    RefreshText();
-    RefreshCursor();
+    if (dynamic_cast<LineNumberTextView*>(view)) 
+    {
+        view = view->PreviousView();
+        lineNumbers = false;
+        RefreshText();
+        RefreshCursor();   
+    }
+    else if (!lineNumbers) 
+    {
+        view = new LineNumberTextView(view);
+        lineNumbers = true;
+        RefreshText();
+        RefreshCursor();
+    }
 }
 
 void ECTextCtrl :: ToggleBorder()
 {
-    if(dynamic_cast<BorderTextView*>(view)) view = view->PreviousView();
-    else view = new BorderTextView(view);
-    RefreshText();
-    RefreshCursor();
+    if (dynamic_cast<BorderTextView*>(view)) 
+    {
+        view = view->PreviousView();
+        borders = false;
+        RefreshText();
+        RefreshCursor();
+    }
+    else if (!borders) 
+    {
+        view = new BorderTextView(view);
+        borders = true;
+        RefreshText();
+        RefreshCursor();
+    }
 }
 
 void ECTextCtrl :: RefreshText()
 {
-   view->AddRows(model->ParseRows(view->GetColNumInView(), view->GetRowNumInView()), model->GetStart());
+   std::pair<std::vector<std::string>, std::vector<int> > pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
+   view->AddRows(pair.first, pair.second);
 }
 
 void ECTextCtrl :: RefreshCursor()

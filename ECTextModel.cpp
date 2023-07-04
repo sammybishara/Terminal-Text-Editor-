@@ -2,15 +2,14 @@
 
 ECTextModel :: ~ECTextModel() 
 {
-
     // writes to given file the document before being destroyed 
     std::ofstream file(filename);
 
     if (file.is_open())
     {
         for (auto line : document) file << line << std::endl;
-        file.close();
     }
+    file.close();
 }
 
 // adds character 
@@ -69,28 +68,30 @@ int ECTextModel :: GetCharCount(int x, int y, int colSize)
     return charCount;
 }
 
-
-std::vector<std::string> ECTextModel :: ParseRows(int colSize, int rowSize)
+std::pair<std::vector<std::string>, std::vector<int> > ECTextModel :: ParseRows(int colSize, int rowSize)
 {
-    // parses rows if there is a column and row limit, splits the lines until the screen is full 
     int rowsFilled = 0;
     std::string line;
 
     std::vector<std::string> ParsedDocument;
+    std::vector<int> lineNumbers;
+    int count = start + 1;
 
     for (unsigned int i = start; i < document.size(); ++i)
     {
         line = document[i];
-
-        // get the amount of rows a line will occupy
-        int rowCount = (int) line.size() / colSize;
-        if (line.size() == 0 || line.size() % colSize > 0) rowCount++;
+        
+        // get the amount of rows the cur line will occupy
+        int rowCount = GetRowsOccupied(i, colSize);
 
         if (rowCount + rowsFilled > rowSize) 
-            {   
-                ended = i - 1;
-                break;
-            }
+        {   
+            ended = i - 1;
+            break;
+        }
+        lineNumbers.push_back(count++);
+        for (int i = 0; i < rowCount - 1; ++i) lineNumbers.push_back(-1);
+
         rowsFilled += rowCount;
 
         // parse the rows for the column size
@@ -101,46 +102,39 @@ std::vector<std::string> ECTextModel :: ParseRows(int colSize, int rowSize)
         }
         if ((document[i].size() == 0 && line.size() == 0) || line.size() > 0) ParsedDocument.push_back(line);
     }
-    return ParsedDocument;
+    std::pair<std::vector<std::string>, std::vector<int> > pair = std::make_pair(ParsedDocument, lineNumbers);
+    return pair;
 }
 
 void ECTextModel :: MoveDown(int colSize)
 {
     if (ended + 1 >= document.size()) return;
 
-    std::string nextLine = document[ended + 1];
+    // Get the rows occupied by the new row that is visible when the screen moves down
+    int rows = GetRowsOccupied(ended + 1, colSize);
 
-
-    int rows = (int) nextLine.size() / colSize;
-    if (nextLine.size() == 0 || nextLine.size() % colSize > 0) rows++;
-
-
+    // moves the start index forward until there is enough space for the rows occupied by the new line 
     while (rows > 0)
     {
-        int rowCount = (int) document[start].size() / colSize;
-        if (document[start].size() == 0 || document[start].size() % colSize > 0) rowCount++;
-
+        // Get the rows occupied at the start index 
+        int rowCount = GetRowsOccupied(start, colSize);
         rows -= rowCount;
         start++;
     }
 }
-
 
 void ECTextModel :: MoveUp()
 {
     if (start - 1 >= 0) start -= 1;
 }
 
-
+// returns the rows occupied given the column size of the screen 
 int ECTextModel :: GetRowsOccupied(int lineNum, int colSize)
 {
-
     if (colSize == 0) return -1;
-
     std::string line = document[lineNum];
     int rowCount = (int) line.size() / colSize;
     if (line.size() == 0 || line.size() % colSize) rowCount++;
-
 
     return rowCount;
 

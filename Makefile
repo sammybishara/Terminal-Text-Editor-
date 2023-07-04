@@ -1,6 +1,6 @@
 CC = g++
 CFLAGS = -Wunused-function -O3 -std=c++11 
-OBJS = ECEditorTest.cpp ECObserver2.cpp ECTextController.cpp ECTextView.cpp ECTextViewImp.cpp  ECTextModel.cpp ECCommandHistory.cpp ECCommand.cpp
+OBJS = ECEditorTest.cpp ECObserver2.cpp ECTextController.cpp TextView.cpp ECTextViewImp.cpp  ECTextModel.cpp ECCommandHistory.cpp ECCommand.cpp
 
 all : myeditor
 

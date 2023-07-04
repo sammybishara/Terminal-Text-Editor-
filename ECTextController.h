@@ -2,7 +2,7 @@
 #ifndef ECTextController_h
 #define ECTextController_h
 
-#include "ECTextView.h"
+#include "TextView.h"
 #include "ECTextModel.h"
 #include "ECCommandHistory.h"
 #include "ECCommand.h"
@@ -22,7 +22,7 @@ enum Mode
 class ECTextCtrl 
 {
 public:
-    ECTextCtrl(ECTextView *textView, ECTextModel *textModel, const std::string filename);
+    ECTextCtrl(TextView *textView, ECTextModel *textModel, const std::string filename);
    
     virtual ~ECTextCtrl();
 
@@ -82,7 +82,7 @@ private:
 
     void ReadFromFile();
 
-    ECTextView *view;
+    TextView *view;
     ECTextModel *model;
     ECCommandHistory *commandH;
     ECCommandSet *cmdSet;

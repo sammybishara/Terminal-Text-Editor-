@@ -2,7 +2,7 @@
 #ifndef ECCommand_h
 #define ECCommand_h
 
-#include "ECTextView.h"
+#include "TextView.h"
 #include "ECTextModel.h"
 #include "ECCursor.h"
 
@@ -18,7 +18,7 @@ public:
 class InsertTextCommand : public ECCommand
 {   
 public:
-    InsertTextCommand(ECTextView *view, ECTextModel *model, char chToInsert, Cursor *cursor) :
+    InsertTextCommand(TextView *view, ECTextModel *model, char chToInsert, Cursor *cursor) :
     view(view),
     model(model),
     chToInsert(chToInsert),
@@ -33,7 +33,7 @@ public:
     virtual void UnExecute();
 
 private:
-    ECTextView *view;
+    TextView *view;
     ECTextModel *model;
     Cursor *cursor;
     char chToInsert;
@@ -44,7 +44,7 @@ private:
 class RemoveTextCommand : public ECCommand
 {   
 public:
-    RemoveTextCommand(ECTextView *view, ECTextModel *model, Cursor *cursor) :
+    RemoveTextCommand(TextView *view, ECTextModel *model, Cursor *cursor) :
     view(view),
     model(model),
     row(cursor->GetCursorY()),
@@ -59,7 +59,7 @@ public:
     virtual void UnExecute();
 
 private:
-    ECTextView *view;
+    TextView *view;
     ECTextModel *model;
     Cursor *cursor;
     const int row;
@@ -72,7 +72,7 @@ private:
 class BreakLineCommand : public ECCommand
 {
 public:
-    BreakLineCommand(ECTextView *view, ECTextModel *model, Cursor *cursor) :
+    BreakLineCommand(TextView *view, ECTextModel *model, Cursor *cursor) :
     view(view),
     model(model),
     row(cursor->GetCursorY()), 
@@ -86,7 +86,7 @@ public:
     virtual void UnExecute();
 
 private:
-    ECTextView *view;
+    TextView *view;
     ECTextModel *model;
     Cursor *cursor;
     const int row;
@@ -97,7 +97,7 @@ private:
 class MergeLineCommand : public ECCommand 
 {
 public:
-    MergeLineCommand(ECTextView *view, ECTextModel *model, Cursor *cursor) :
+    MergeLineCommand(TextView *view, ECTextModel *model, Cursor *cursor) :
     view(view),
     model(model),
     row(cursor->GetCursorY()),
@@ -112,7 +112,7 @@ public:
     virtual void UnExecute();
 
 private:
-    ECTextView *view;
+    TextView *view;
     ECTextModel *model;
     Cursor *cursor;
     int row;

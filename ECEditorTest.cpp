@@ -16,49 +16,49 @@ int main(int argc, char *argv[])
 
     std::string filename((argv[1]));
 
-    ECTextView wnd;
+    TextView *wnd = new TextView();
     ECTextModel model(filename);
-    ECTextCtrl controller(&wnd, &model, filename);
+    ECTextCtrl controller(wnd, &model, filename);
 
     // observer for adding characters
     AddTextObserver addText(&controller);
-    wnd.Attach(&addText);
+    wnd->Attach(&addText);
 
     //observer for deleting characters
     RemoveTextObserver removeTxt(&controller);
-    wnd.Attach(&removeTxt);
+    wnd->Attach(&removeTxt);
 
     // observer for horizonal cursor movement
     MoveCursorHorizonal horizonalMovement(&controller);
-    wnd.Attach(&horizonalMovement);
+    wnd->Attach(&horizonalMovement);
 
     // observer for vertical cursor movement
     MoveCursorVertical vertialMovement(&controller);
-    wnd.Attach(&vertialMovement);
+    wnd->Attach(&vertialMovement);
 
     // observer for breaking a line
     BreakLine bl(&controller);
-    wnd.Attach(&bl);
+    wnd->Attach(&bl);
 
     // observer for changing between command and edit mode 
     ChangeMode change(&controller);
-    wnd.Attach(&change);
+    wnd->Attach(&change);
 
     // observer for undoing commands
     UndoObserver undo(&controller);
-    wnd.Attach(&undo);
+    wnd->Attach(&undo);
 
     RedoObserver redo(&controller);
-    wnd.Attach(&redo);
+    wnd->Attach(&redo);
 
     AddLineObserver addL(&controller);
-    wnd.Attach(&addL);
+    wnd->Attach(&addL);
 
     AddBorderObserver addB(&controller);
-    wnd.Attach(&addB);
+    wnd->Attach(&addB);
 
     ResizeObserver resize(&controller);
-    wnd.Attach(&resize);
+    wnd->Attach(&resize);
 
     controller.Show();
 
