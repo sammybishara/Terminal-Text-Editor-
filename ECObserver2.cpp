@@ -6,48 +6,47 @@ using namespace std;
 void AddTextObserver :: Update() 
 {
     char ch = static_cast<char>(ctrl->GetPressedKey()); 
-    
-    if ((ch >= ' ' && ch <= '~' ) && ctrl->getMode() == EDIT_MODE) ctrl->addChar(ch);
+    if ((ch >= ' ' && ch <= '~' ) && ctrl->GetMode() == EDIT_MODE) ctrl->AddChar(ch);
 }
 
 void RemoveTextObserver :: Update()
 {
-    if (ctrl->GetPressedKey() == BACKSPACE && ctrl->getMode() == EDIT_MODE) ctrl->Delete();
+    if (ctrl->GetPressedKey() == BACKSPACE && ctrl->GetMode() == EDIT_MODE) ctrl->Delete();
 }
 
 void MoveCursorHorizonal :: Update()
 {
-    if (ctrl->GetPressedKey() == ARROW_LEFT) ctrl->moveLeft();
-    else if (ctrl->GetPressedKey() == ARROW_RIGHT) ctrl->moveRight();
+    if (ctrl->GetPressedKey() == ARROW_LEFT) ctrl->MoveLeft();
+    else if (ctrl->GetPressedKey() == ARROW_RIGHT) ctrl->MoveRight();
 }
 
 void MoveCursorVertical :: Update()
 {
-    if (ctrl->GetPressedKey() == ARROW_UP) ctrl->moveUp();
-    else if (ctrl->GetPressedKey() == ARROW_DOWN) ctrl->moveDown();
+    if (ctrl->GetPressedKey() == ARROW_UP) ctrl->MoveUp();
+    else if (ctrl->GetPressedKey() == ARROW_DOWN) ctrl->MoveDown();
 }
 
 void BreakLine :: Update()
 {
-    if (ctrl->GetPressedKey() == ENTER && ctrl->getMode() == EDIT_MODE) ctrl->breakLine();
+    if (ctrl->GetPressedKey() == ENTER && ctrl->GetMode() == EDIT_MODE) ctrl->BreakLine();
 }
 
 void ChangeMode :: Update()
 {
     char ch = ctrl->GetPressedKey();
 
-    if (ctrl->GetPressedKey() == ESC && ctrl->getMode() == EDIT_MODE) ctrl->changeMode(COMMAND_MODE);
-    else if (ch == 'i' && ctrl->getMode() == COMMAND_MODE) ctrl->changeMode(EDIT_MODE);
+    if (ctrl->GetPressedKey() == ESC && ctrl->GetMode() == EDIT_MODE) ctrl->ChangeMode(COMMAND_MODE);
+    else if (ch == 'i' && ctrl->GetMode() == COMMAND_MODE) ctrl->ChangeMode(EDIT_MODE);
 }
 
 void UndoObserver :: Update()
 {
-    if (ctrl->getMode() == COMMAND_MODE && ctrl->GetPressedKey() == CTRL_Z) ctrl->Undo();
+    if (ctrl->GetMode() == COMMAND_MODE && ctrl->GetPressedKey() == CTRL_Z) ctrl->Undo();
 }
 
 void RedoObserver :: Update()
 {
-    if (ctrl->getMode() == COMMAND_MODE && ctrl->GetPressedKey() == CTRL_Y) ctrl->Redo();
+    if (ctrl->GetMode() == COMMAND_MODE && ctrl->GetPressedKey() == CTRL_Y) ctrl->Redo();
 }
 
 
@@ -64,5 +63,10 @@ void AddBorderObserver :: Update()
 //TODO
 void ResizeObserver :: Update()
 {
+}
+
+void CopyObserver :: Update() 
+{
+    if (ctrl->GetPressedKey() == CTRL_C && ctrl->GetMode() == COMMAND_MODE) ctrl->Copy();
 }
 

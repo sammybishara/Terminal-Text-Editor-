@@ -60,6 +60,9 @@ int main(int argc, char *argv[])
     ResizeObserver resize(&controller);
     wnd->Attach(&resize);
 
+    CopyObserver copy(&controller);
+    wnd->Attach(&copy);
+
     controller.Show();
 
     return 0;

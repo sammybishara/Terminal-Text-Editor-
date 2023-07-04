@@ -157,7 +157,6 @@ private:
     ECTextCtrl *ctrl;
 };
 
-
 class ResizeObserver : public ECObserver
 {
 public:
@@ -172,4 +171,19 @@ private:
     ECTextCtrl *ctrl;
 };
 
+// observer that calls the copy method of the controller
+// only coppies when in command mode 
+class CopyObserver : public ECObserver
+{
+public:
+    CopyObserver(ECTextCtrl *ctrl) :
+    ctrl(ctrl) {}
+
+    virtual ~CopyObserver() {}
+
+    virtual void Update();
+
+private:
+    ECTextCtrl *ctrl;
+};
 #endif
