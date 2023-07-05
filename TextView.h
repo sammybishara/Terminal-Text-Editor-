@@ -93,7 +93,7 @@ public:
     // return the special columns that the view occupies 
     virtual int GetColsOccupied() { return 0; }
 
-    TextView* PreviousView() { return nullptr; }
+    virtual TextView* PreviousView() { return nullptr; }
 
 private:
     ECTextViewImp *TextImp;
@@ -107,7 +107,7 @@ public:
     TextViewDec(TextView *view) :
     view(view) {}
 
-    virtual ~TextViewDec() { delete view; }
+    virtual ~TextViewDec() {}
 
     // Show the view. This would enter a forever loop, until quit is set
     void Show() { view->Show(); }
