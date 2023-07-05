@@ -32,9 +32,15 @@ void TextCtrl :: ReadFromFile()
 
 TextCtrl :: ~TextCtrl()
 {
-    delete view;
+    
     delete commandH;
     delete cursor;
+
+    if (view != nullptr)
+    {
+        delete view;
+        view = NULL;
+    }
     // if there is an empty command set delete it
     if (cmdSet != nullptr) 
     {
@@ -70,6 +76,16 @@ void TextCtrl :: Copy()
     std::string fullRow = model->GetRow(cursor->GetCursorY());
     int pos = cursor->GetCursorX() - view->GetCursorX();
     copiedLine = fullRow.substr(pos, view->GetColNumInView());
+}
+
+// TODO create paste command
+void TextCtrl :: Paste()
+{
+    cmdSet = new CommandSet();
+    PasteCommand *paste = new PasteCommand(view, model, cursor, copiedLine);
+    cmdSet->ExecuteCmd(paste);
+    commandH->AddCommand(cmdSet);
+    cmdSet = NULL;
 }
 
 void TextCtrl :: RemoveChar()
@@ -191,36 +207,37 @@ void TextCtrl :: ToggleLineNumbers()
 {
     if (dynamic_cast<LineNumberTextView*>(view)) 
     {
-        view = view->PreviousView();
-        lineNumbers = false;
-        RefreshText();
-        RefreshCursor();   
+        // view = view->PreviousView();
+        TextView *previousView = view->PreviousView();
+        delete view;
+        view = previousView;
+        lineNumbers = false; 
     }
     else if (!lineNumbers) 
     {
         view = new LineNumberTextView(view);
         lineNumbers = true;
-        RefreshText();
-        RefreshCursor();
     }
+    RefreshText();
+    RefreshCursor();
 }
 
 void TextCtrl :: ToggleBorder()
 {
     if (dynamic_cast<BorderTextView*>(view)) 
     {
-        view = view->PreviousView();
+        TextView *previousView = view->PreviousView();
+        delete view;
+        view = previousView;
         borders = false;
-        RefreshText();
-        RefreshCursor();
     }
     else if (!borders) 
     {
         view = new BorderTextView(view);
         borders = true;
-        RefreshText();
-        RefreshCursor();
     }
+    RefreshText();
+    RefreshCursor();
 }
 
 void TextCtrl :: RefreshText()

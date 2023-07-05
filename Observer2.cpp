@@ -70,3 +70,7 @@ void CopyObserver :: Update()
     if (ctrl->GetPressedKey() == CTRL_C && ctrl->GetMode() == COMMAND_MODE) ctrl->Copy();
 }
 
+void PasteObserver :: Update()
+{
+    if (ctrl->GetPressedKey() == CTRL_V && ctrl->GetMode() == COMMAND_MODE) ctrl->Paste();
+}

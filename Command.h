@@ -94,7 +94,7 @@ private:
 };
 
 
-class MergeLineCommand : public  Command 
+class MergeLineCommand : public Command 
 {
 public:
     MergeLineCommand(TextView *view, TextModel *model, Cursor *cursor) :
@@ -118,6 +118,31 @@ private:
     int row;
     int col;
     bool ran;
+};
+
+class PasteCommand : public Command
+{
+public:
+    PasteCommand(TextView *view, TextModel *model, Cursor *cursor, std::string strToPaste) :
+    view(view),
+    model(model),
+    strToPaste(strToPaste),
+    row(cursor->GetCursorY()),
+    col(cursor->GetCursorX()) {}
+
+    virtual ~PasteCommand() {}
+
+    virtual void Execute();
+
+    virtual void UnExecute();
+
+private:
+    TextView *view;
+    TextModel *model;
+    Cursor *cursor;
+    int row;
+    int col;
+    std::string strToPaste;
 };
 
 class CommandSet : public Command 

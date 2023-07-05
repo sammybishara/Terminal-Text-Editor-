@@ -120,9 +120,22 @@ void MergeLineCommand :: UnExecute()
     view->AddRows(rows, lineNumbers);
 }
 
-CommandSet :: ~CommandSet()
+void PasteCommand :: Execute()
 {
-  
+    model->Paste(strToPaste, col, row);
+    std::pair<std::vector<std::string>, std::vector<int> > pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
+    view->AddRows(pair.first, pair.second);
+}
+
+void PasteCommand :: UnExecute()
+{
+    model->RemoveRow(col, row, strToPaste.size());
+    auto pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
+    view->AddRows(pair.first, pair.second);
+}
+
+CommandSet :: ~CommandSet()
+{  
     for (unsigned int i = 0; i < commands.size(); ++i) delete commands[i];
     commands.clear();
 }

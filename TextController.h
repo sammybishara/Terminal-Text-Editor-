@@ -8,7 +8,7 @@
 #include "Command.h"
 #include <fstream>
 #include <string>
-#include "ECCursor.h"
+#include "Cursor.h"
 
 class ECTextCtrl;
 

@@ -63,6 +63,10 @@ int main(int argc, char *argv[])
     CopyObserver copy(&controller);
     wnd->Attach(&copy);
 
+    // intializes observer for pasting
+    PasteObserver paste(&controller);
+    wnd->Attach(&paste);
+
     controller.Show();
 
     return 0;

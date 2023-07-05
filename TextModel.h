@@ -40,6 +40,12 @@ public:
     // merges two lines together for backspace 
     void mergeline(int row);
 
+    // Paste the given row into the x and y position
+    void Paste(const std::string strToPaste, const int x, const int y);
+
+    // Remove a row or portion of a row 
+    void RemoveRow(const int x, const int y, const int size);
+
     // returns character count for converting to screen cursor
     int GetCharCount(int x, int y, int colSize);
 

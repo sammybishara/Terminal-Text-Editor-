@@ -53,6 +53,17 @@ void TextModel :: mergeline(int row)
     document.erase(document.begin() + row);
 }
 
+// pastes the new row
+void TextModel :: Paste(const std::string strToPaste, const int x, const int y)
+{
+    document[y] = document[y].insert(x, strToPaste);
+}
+
+void TextModel :: RemoveRow(const int x, const int y, const int size)
+{
+    document[y].erase(x, size);
+}
+
 int TextModel :: GetCharCount(int x, int y, int colSize)
 {
     int index = start;

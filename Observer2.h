@@ -186,4 +186,20 @@ public:
 private:
     TextCtrl *ctrl;
 };
+
+//Observer for pasting the row that is currently coppied 
+class PasteObserver : public ECObserver
+{
+public:
+    PasteObserver(TextCtrl *ctrl) :
+    ctrl(ctrl) {}
+
+    virtual ~PasteObserver() {}
+
+    virtual void Update();
+
+private:
+    TextCtrl *ctrl;
+};
+
 #endif
