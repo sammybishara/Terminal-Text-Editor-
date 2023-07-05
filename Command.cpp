@@ -1,4 +1,4 @@
-#include "ECCommand.h"
+#include "Command.h"
 
 void InsertTextCommand :: Execute()
 {
@@ -120,7 +120,7 @@ void MergeLineCommand :: UnExecute()
     view->AddRows(rows, lineNumbers);
 }
 
-ECCommandSet :: ~ECCommandSet()
+CommandSet :: ~CommandSet()
 {
   
     for (unsigned int i = 0; i < commands.size(); ++i) delete commands[i];
@@ -128,19 +128,19 @@ ECCommandSet :: ~ECCommandSet()
 }
 
 // Executes all commands from beginning to end 
-void ECCommandSet :: Execute()
+void CommandSet :: Execute()
 {   
     for (auto command : commands) command->Execute();
 }
 
 // redos each command from back to front 
-void ECCommandSet :: UnExecute()
+void CommandSet :: UnExecute()
 {
     for (auto it = commands.rbegin(); it != commands.rend(); it++) (*it)->UnExecute();
 }
 
 // adds a new command to the set of commands 
-void ECCommandSet :: ExecuteCmd(ECCommand *pCmd)
+void CommandSet :: ExecuteCmd(Command *pCmd)
 {
     pCmd->Execute();
     commands.push_back(pCmd);

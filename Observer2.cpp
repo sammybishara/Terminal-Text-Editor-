@@ -1,4 +1,4 @@
-#include "ECObserver2.h"
+#include "Observer2.h"
 #include <iostream>
 
 using namespace std;

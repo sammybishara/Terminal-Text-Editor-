@@ -8,19 +8,19 @@
 #include <utility>
 
 
-class ECTextModel 
+class TextModel 
 {
 
 public:
 
-    ECTextModel(const std::string filename) :
+    TextModel(const std::string filename) :
     filename(filename),
     start(0),
     ended(-1)
     {
     }
 
-    virtual ~ECTextModel();
+    virtual ~TextModel();
 
     // updates the document and calls the controller to display
     void addRow(const std::string row) { document.push_back(row); }

@@ -1,24 +1,24 @@
 
-#ifndef ECCommand_h
-#define ECCommand_h
+#ifndef Command_h
+#define Command_h
 
 #include "TextView.h"
-#include "ECTextModel.h"
-#include "ECCursor.h"
+#include "TextModel.h"
+#include "Cursor.h"
 
 // command design pattern
-class ECCommand
+class Command
 {
 public:
-    virtual ~ECCommand() {}
+    virtual ~Command() {}
     virtual void Execute() = 0;
     virtual void UnExecute() = 0;
 };
 
-class InsertTextCommand : public ECCommand
+class InsertTextCommand : public Command 
 {   
 public:
-    InsertTextCommand(TextView *view, ECTextModel *model, char chToInsert, Cursor *cursor) :
+    InsertTextCommand(TextView *view, TextModel *model, char chToInsert, Cursor *cursor) :
     view(view),
     model(model),
     chToInsert(chToInsert),
@@ -34,17 +34,17 @@ public:
 
 private:
     TextView *view;
-    ECTextModel *model;
+    TextModel *model;
     Cursor *cursor;
     char chToInsert;
     int row;
     int col;
 };
 
-class RemoveTextCommand : public ECCommand
+class RemoveTextCommand : public Command 
 {   
 public:
-    RemoveTextCommand(TextView *view, ECTextModel *model, Cursor *cursor) :
+    RemoveTextCommand(TextView *view, TextModel *model, Cursor *cursor) :
     view(view),
     model(model),
     row(cursor->GetCursorY()),
@@ -60,7 +60,7 @@ public:
 
 private:
     TextView *view;
-    ECTextModel *model;
+    TextModel *model;
     Cursor *cursor;
     const int row;
     int col;
@@ -69,10 +69,10 @@ private:
 };
 
 
-class BreakLineCommand : public ECCommand
+class BreakLineCommand : public Command 
 {
 public:
-    BreakLineCommand(TextView *view, ECTextModel *model, Cursor *cursor) :
+    BreakLineCommand(TextView *view, TextModel *model, Cursor *cursor) :
     view(view),
     model(model),
     row(cursor->GetCursorY()), 
@@ -87,17 +87,17 @@ public:
 
 private:
     TextView *view;
-    ECTextModel *model;
+    TextModel *model;
     Cursor *cursor;
     const int row;
     const int col;
 };
 
 
-class MergeLineCommand : public ECCommand 
+class MergeLineCommand : public  Command 
 {
 public:
-    MergeLineCommand(TextView *view, ECTextModel *model, Cursor *cursor) :
+    MergeLineCommand(TextView *view, TextModel *model, Cursor *cursor) :
     view(view),
     model(model),
     row(cursor->GetCursorY()),
@@ -113,30 +113,30 @@ public:
 
 private:
     TextView *view;
-    ECTextModel *model;
+    TextModel *model;
     Cursor *cursor;
     int row;
     int col;
     bool ran;
 };
 
-class ECCommandSet : public ECCommand
+class CommandSet : public Command 
 {
 public:
-    ECCommandSet() {}
+    CommandSet() {}
 
-    virtual ~ECCommandSet();
+    virtual ~CommandSet();
 
     void Execute();
 
     void UnExecute();
 
-    void ExecuteCmd(ECCommand *pCmd);
+    void ExecuteCmd( Command *pCmd);
 
     int GetNumCommands() {return commands.size();}
 
 private:
-    std::vector<ECCommand *> commands;
+    std::vector< Command *> commands;
 };
 
 #endif

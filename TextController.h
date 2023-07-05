@@ -1,11 +1,11 @@
 
-#ifndef ECTextController_h
-#define ECTextController_h
+#ifndef TEXTCONTROLLER_H
+#define TEXTCONTROLLER_H
 
 #include "TextView.h"
-#include "ECTextModel.h"
-#include "ECCommandHistory.h"
-#include "ECCommand.h"
+#include "TextModel.h"
+#include "CommandHistory.h"
+#include "Command.h"
 #include <fstream>
 #include <string>
 #include "ECCursor.h"
@@ -19,12 +19,12 @@ enum Mode
     EDIT_MODE
 };
 
-class ECTextCtrl 
+class TextCtrl 
 {
 public:
-    ECTextCtrl(TextView *textView, ECTextModel *textModel, const std::string filename);
+    TextCtrl(TextView *textView, TextModel *textModel, const std::string filename);
    
-    virtual ~ECTextCtrl();
+    virtual ~TextCtrl();
 
     // controller recieves key from view and returns it
     int GetPressedKey() {return view->GetPressedKey();}
@@ -46,6 +46,9 @@ public:
 
     // function for coppying the current row of the cursor 
     void Copy();
+
+    // function for pasting the copied row 
+    void Paste();
 
     // moves the cursour left
     void MoveLeft();
@@ -86,9 +89,9 @@ private:
     void ReadFromFile();
 
     TextView *view;
-    ECTextModel *model;
-    ECCommandHistory *commandH;
-    ECCommandSet *cmdSet;
+    TextModel *model;
+    CommandHistory *commandH;
+    CommandSet *cmdSet;
     Cursor *cursor;
     int mode;
     std::string file;

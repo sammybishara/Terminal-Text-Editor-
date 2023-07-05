@@ -1,17 +1,17 @@
 
-#ifndef ECOBSERVER2_H
-#define ECOBSERVER2_H
+#ifndef OBSERVER2_H
+#define OBSERVER2_H
 
 
 #include "ECObserver.h"
-#include "ECTextController.h"
+#include "TextController.h"
 
 // observer class for adding text
 class AddTextObserver : public ECObserver
 {
 
 public:
-    AddTextObserver(ECTextCtrl *ctrl) : 
+    AddTextObserver(TextCtrl *ctrl) : 
     ctrl(ctrl) {}
 
     virtual ~AddTextObserver() {}
@@ -19,27 +19,27 @@ public:
     virtual void Update();
 
 private:
-    ECTextCtrl *ctrl;
+    TextCtrl *ctrl;
 };
 
 // observer class for removing text
 class RemoveTextObserver : public ECObserver 
 {
 public:
-    RemoveTextObserver(ECTextCtrl *ctrl):
+    RemoveTextObserver(TextCtrl *ctrl):
     ctrl(ctrl) {}
     
     virtual ~RemoveTextObserver() {}
         
     virtual void Update();
 private:
-    ECTextCtrl *ctrl;
+    TextCtrl *ctrl;
 };
 // observer class for moving cursor horizontal
 class MoveCursorHorizonal : public ECObserver
 {
 public:
-    MoveCursorHorizonal(ECTextCtrl *ctrl) :
+    MoveCursorHorizonal(TextCtrl *ctrl) :
     ctrl(ctrl) {}
 
     virtual ~MoveCursorHorizonal(){}
@@ -47,14 +47,14 @@ public:
     virtual void Update();
 
 private:
-    ECTextCtrl *ctrl;
+    TextCtrl *ctrl;
 };
 
 // observer class for moving cursor vertical
 class MoveCursorVertical : public ECObserver
 {
 public:
-    MoveCursorVertical(ECTextCtrl *ctrl) :
+    MoveCursorVertical(TextCtrl *ctrl) :
     ctrl(ctrl) {}
 
     virtual ~MoveCursorVertical() {}
@@ -62,14 +62,14 @@ public:
     virtual void Update();
 
 private:
-    ECTextCtrl *ctrl;
+    TextCtrl *ctrl;
 };
 
 // observer class for breaking a line
 class BreakLine : public ECObserver
 {
 public:
-    BreakLine(ECTextCtrl *ctrl) :
+    BreakLine(TextCtrl *ctrl) :
     ctrl(ctrl) {}
 
     virtual ~BreakLine() {}
@@ -77,14 +77,14 @@ public:
     virtual void Update();
 
 private:
-    ECTextCtrl *ctrl;
+    TextCtrl *ctrl;
 };
 
 // observer class for changing mode between edit and command mode 
 class ChangeMode : public ECObserver
 {
 public: 
-    ChangeMode(ECTextCtrl *ctrl) :
+    ChangeMode(TextCtrl *ctrl) :
     ctrl(ctrl) {}
 
     virtual ~ChangeMode() {}
@@ -92,7 +92,7 @@ public:
     virtual void Update();
 
 private:
-    ECTextCtrl *ctrl;
+    TextCtrl *ctrl;
 };
 
 
@@ -100,7 +100,7 @@ private:
 class UndoObserver : public ECObserver
 {
 public:
-    UndoObserver(ECTextCtrl *ctrl) :
+    UndoObserver(TextCtrl *ctrl) :
     ctrl(ctrl) {}
 
     virtual ~UndoObserver() {}
@@ -109,7 +109,7 @@ public:
     virtual void Update();
 
 private:
-    ECTextCtrl *ctrl;
+    TextCtrl *ctrl;
 };
 
 
@@ -117,7 +117,7 @@ private:
 class RedoObserver : public ECObserver
 {
 public: 
-    RedoObserver(ECTextCtrl *ctrl) :
+    RedoObserver(TextCtrl *ctrl) :
     ctrl(ctrl) {}
 
     virtual ~RedoObserver() {}
@@ -125,14 +125,14 @@ public:
     virtual void Update();
 
 private:
-    ECTextCtrl *ctrl;
+    TextCtrl *ctrl;
 };
 
 
 class AddLineObserver : public ECObserver
 {
 public:
-    AddLineObserver(ECTextCtrl *ctrl) :
+    AddLineObserver(TextCtrl *ctrl) :
     ctrl(ctrl) {}
 
     virtual ~AddLineObserver() {}
@@ -140,13 +140,13 @@ public:
     virtual void Update();
 
 private:
-    ECTextCtrl *ctrl;
+    TextCtrl *ctrl;
 };
 
 class AddBorderObserver : public ECObserver
 {
 public:
-    AddBorderObserver(ECTextCtrl *ctrl) :
+    AddBorderObserver(TextCtrl *ctrl) :
     ctrl(ctrl) {}
 
     virtual ~AddBorderObserver() {}
@@ -154,13 +154,13 @@ public:
     virtual void Update();
 
 private:
-    ECTextCtrl *ctrl;
+    TextCtrl *ctrl;
 };
 
 class ResizeObserver : public ECObserver
 {
 public:
-    ResizeObserver(ECTextCtrl *ctrl) :
+    ResizeObserver(TextCtrl *ctrl) :
     ctrl(ctrl) {}
 
     virtual ~ResizeObserver() {}
@@ -168,7 +168,7 @@ public:
     virtual void Update();
 
 private:
-    ECTextCtrl *ctrl;
+    TextCtrl *ctrl;
 };
 
 // observer that calls the copy method of the controller
@@ -176,7 +176,7 @@ private:
 class CopyObserver : public ECObserver
 {
 public:
-    CopyObserver(ECTextCtrl *ctrl) :
+    CopyObserver(TextCtrl *ctrl) :
     ctrl(ctrl) {}
 
     virtual ~CopyObserver() {}
@@ -184,6 +184,6 @@ public:
     virtual void Update();
 
 private:
-    ECTextCtrl *ctrl;
+    TextCtrl *ctrl;
 };
 #endif

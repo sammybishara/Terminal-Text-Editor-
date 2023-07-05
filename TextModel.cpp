@@ -1,6 +1,6 @@
-#include "ECTextModel.h"
+#include "TextModel.h"
 
-ECTextModel :: ~ECTextModel() 
+TextModel :: ~TextModel() 
 {
     // writes to given file the document before being destroyed 
     std::ofstream file(filename);
@@ -13,7 +13,7 @@ ECTextModel :: ~ECTextModel()
 }
 
 // adds character 
-void ECTextModel :: addChar(int row, int col, char ch, int screenWidth, int cursorY)
+void TextModel :: addChar(int row, int col, char ch, int screenWidth, int cursorY)
 {   
     if (document.size() == 0) addRow(std::string(1, ch));
     else if (document[row].size() == 0 || document[row].size() == col) document[row].push_back(ch);
@@ -21,7 +21,7 @@ void ECTextModel :: addChar(int row, int col, char ch, int screenWidth, int curs
 }
 
 // removes character 
-void ECTextModel :: removeChar(int row, int col)
+void TextModel :: removeChar(int row, int col)
 {
     if (document.size() == 0) return;
     else if (document[row].size() == 1) document[row].erase(0);
@@ -29,7 +29,7 @@ void ECTextModel :: removeChar(int row, int col)
 }
 
 // splits line when user hits enter 
-void ECTextModel :: breakLine(int row, int col)
+void TextModel :: breakLine(int row, int col)
 {
 
     if (document.size() == 0) document.push_back(std::string());
@@ -46,14 +46,14 @@ void ECTextModel :: breakLine(int row, int col)
     }
 }
 // merges two lines together 
-void ECTextModel :: mergeline(int row)
+void TextModel :: mergeline(int row)
 {
     std::string curString = document[row];
     document[row - 1].append(curString);
     document.erase(document.begin() + row);
 }
 
-int ECTextModel :: GetCharCount(int x, int y, int colSize)
+int TextModel :: GetCharCount(int x, int y, int colSize)
 {
     int index = start;
     int charCount = x;
@@ -68,7 +68,7 @@ int ECTextModel :: GetCharCount(int x, int y, int colSize)
     return charCount;
 }
 
-std::pair<std::vector<std::string>, std::vector<int> > ECTextModel :: ParseRows(int colSize, int rowSize)
+std::pair<std::vector<std::string>, std::vector<int> > TextModel :: ParseRows(int colSize, int rowSize)
 {
     int rowsFilled = 0;
     std::string line;
@@ -106,7 +106,7 @@ std::pair<std::vector<std::string>, std::vector<int> > ECTextModel :: ParseRows(
     return pair;
 }
 
-void ECTextModel :: MoveDown(int colSize)
+void TextModel :: MoveDown(int colSize)
 {
     if (ended + 1 >= document.size()) return;
 
@@ -123,13 +123,13 @@ void ECTextModel :: MoveDown(int colSize)
     }
 }
 
-void ECTextModel :: MoveUp()
+void TextModel :: MoveUp()
 {
     if (start - 1 >= 0) start -= 1;
 }
 
 // returns the rows occupied given the column size of the screen 
-int ECTextModel :: GetRowsOccupied(int lineNum, int colSize)
+int TextModel :: GetRowsOccupied(int lineNum, int colSize)
 {
     if (colSize == 0) return -1;
     std::string line = document[lineNum];

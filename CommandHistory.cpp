@@ -1,10 +1,10 @@
-#include "ECCommandHistory.h"
+#include "CommandHistory.h"
 
-ECCommandHistory :: ECCommandHistory() : currentIndex(-1)
+CommandHistory :: CommandHistory() : currentIndex(-1)
 {
 }
 
-ECCommandHistory :: ~ECCommandHistory()
+CommandHistory :: ~CommandHistory()
 {
 
     for(unsigned int i =0; i < commandHistory.size(); ++i)
@@ -15,7 +15,7 @@ ECCommandHistory :: ~ECCommandHistory()
     currentIndex = -1;
 }
 
-bool ECCommandHistory :: Undo()
+bool CommandHistory :: Undo()
 {
     if( currentIndex < 0  )
     {
@@ -26,7 +26,7 @@ bool ECCommandHistory :: Undo()
     return true;
 }
 
-bool ECCommandHistory :: Redo()
+bool CommandHistory :: Redo()
 {
     if( currentIndex >= (int)commandHistory.size()-1  )
     {
@@ -38,7 +38,7 @@ bool ECCommandHistory :: Redo()
 }
 
 
-void ECCommandHistory :: AddCommand( ECCommand *pCmd )
+void CommandHistory :: AddCommand( Command *pCmd )
 {
     // clear up all cmds from current pos to end
     if( currentIndex >= -1 )

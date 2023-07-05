@@ -1,7 +1,7 @@
-#include "ECTextController.h"
+#include "TextController.h"
 
 // reads the lines from the given file and uploads it to document and view
-ECTextCtrl :: ECTextCtrl(TextView *textView, ECTextModel *textModel, const std::string filename) :
+TextCtrl :: TextCtrl(TextView *textView, TextModel *textModel, const std::string filename) :
 model(textModel),
 mode(COMMAND_MODE),
 file(filename),
@@ -10,14 +10,14 @@ lineNumbers(false),
 borders(false)
 {
     view = new TextViewDec(textView);
-    commandH = new ECCommandHistory();
+    commandH = new CommandHistory();
     cursor = new Cursor();
     // add a status bar
     view->AddStatusRow("COMMAND MODE", "", false);
     ReadFromFile();
 }
 
-void ECTextCtrl :: ReadFromFile()
+void TextCtrl :: ReadFromFile()
 {
     std::ifstream infile(file);
     std::string line;
@@ -30,7 +30,7 @@ void ECTextCtrl :: ReadFromFile()
     }
 }
 
-ECTextCtrl :: ~ECTextCtrl()
+TextCtrl :: ~TextCtrl()
 {
     delete view;
     delete commandH;
@@ -44,7 +44,7 @@ ECTextCtrl :: ~ECTextCtrl()
 }
 
 // creates and executes a new add text command and moves cursor to the right 
-void ECTextCtrl :: AddChar(char ch)
+void TextCtrl :: AddChar(char ch)
 {
     InsertTextCommand *addText = new InsertTextCommand(view, model, ch, cursor);
     cmdSet->ExecuteCmd(addText);
@@ -54,7 +54,7 @@ void ECTextCtrl :: AddChar(char ch)
     RefreshCursor();
 }
 
-void ECTextCtrl :: Delete()
+void TextCtrl :: Delete()
 {
     int x = cursor->GetCursorX();
     int y = cursor->GetCursorY();
@@ -65,14 +65,14 @@ void ECTextCtrl :: Delete()
     else RemoveChar();
 }
 
-void ECTextCtrl :: Copy()
+void TextCtrl :: Copy()
 {
     std::string fullRow = model->GetRow(cursor->GetCursorY());
     int pos = cursor->GetCursorX() - view->GetCursorX();
     copiedLine = fullRow.substr(pos, view->GetColNumInView());
 }
 
-void ECTextCtrl :: RemoveChar()
+void TextCtrl :: RemoveChar()
 {
     RemoveTextCommand *rText = new RemoveTextCommand(view, model, cursor);
     cmdSet->ExecuteCmd(rText);
@@ -83,7 +83,7 @@ void ECTextCtrl :: RemoveChar()
 }
 
 // moves the cursor left 
-void ECTextCtrl :: MoveLeft()
+void TextCtrl :: MoveLeft()
 {
     // checks if cursor is not at beginning of row, else move left
     if (model->GetSize() == 0) return;
@@ -92,7 +92,7 @@ void ECTextCtrl :: MoveLeft()
 }
 
 // moves cursor right 
-void ECTextCtrl :: MoveRight()
+void TextCtrl :: MoveRight()
 {
     if (model->GetSize() == 0) return;
     // checks if cursor is not greater than size() of current row, else move right 
@@ -101,7 +101,7 @@ void ECTextCtrl :: MoveRight()
 }
 
 // moves cursor down
-void ECTextCtrl :: MoveDown()
+void TextCtrl :: MoveDown()
 {
     if (model->GetSize() == 0) return;
 
@@ -122,7 +122,7 @@ void ECTextCtrl :: MoveDown()
 }
 
 // moves cursor up 
-void ECTextCtrl :: MoveUp()
+void TextCtrl :: MoveUp()
 {   
     if (model->GetSize() == 0 ) return;
 
@@ -140,7 +140,7 @@ void ECTextCtrl :: MoveUp()
 }
 
 // breaks line when user hits enter 
-void ECTextCtrl :: BreakLine()
+void TextCtrl :: BreakLine()
 {
     BreakLineCommand *breakL = new BreakLineCommand(view, model, cursor);
     cmdSet->ExecuteCmd(breakL);
@@ -153,7 +153,7 @@ void ECTextCtrl :: BreakLine()
 
 
 // merges line with previous line when backspace is hit and column is 0 
-void ECTextCtrl :: MergeLine()
+void TextCtrl :: MergeLine()
 {
     int newX = model->GetRow(cursor->GetCursorY() - 1).size();
     MergeLineCommand *mergeC = new MergeLineCommand(view, model, cursor);
@@ -166,7 +166,7 @@ void ECTextCtrl :: MergeLine()
 }
 
 // changes mode to the oposite mode 
-void ECTextCtrl :: ChangeMode(int newMode)
+void TextCtrl :: ChangeMode(int newMode)
 {
     mode = newMode;
     view->ClearStatusRows();
@@ -174,7 +174,7 @@ void ECTextCtrl :: ChangeMode(int newMode)
     if (mode == EDIT_MODE) 
     {   
         // creates a new set of commands if edit mode is entered, changes status row
-        cmdSet = new ECCommandSet();
+        cmdSet = new CommandSet();
         view->AddStatusRow("-- INSERT --", "", false);
     }
     else 
@@ -187,7 +187,7 @@ void ECTextCtrl :: ChangeMode(int newMode)
     }
 }
 
-void ECTextCtrl :: ToggleLineNumbers()
+void TextCtrl :: ToggleLineNumbers()
 {
     if (dynamic_cast<LineNumberTextView*>(view)) 
     {
@@ -205,7 +205,7 @@ void ECTextCtrl :: ToggleLineNumbers()
     }
 }
 
-void ECTextCtrl :: ToggleBorder()
+void TextCtrl :: ToggleBorder()
 {
     if (dynamic_cast<BorderTextView*>(view)) 
     {
@@ -223,13 +223,13 @@ void ECTextCtrl :: ToggleBorder()
     }
 }
 
-void ECTextCtrl :: RefreshText()
+void TextCtrl :: RefreshText()
 {
    std::pair<std::vector<std::string>, std::vector<int> > pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
    view->AddRows(pair.first, pair.second);
 }
 
-void ECTextCtrl :: RefreshCursor()
+void TextCtrl :: RefreshCursor()
 {
     int charCount = model->GetCharCount(cursor->GetCursorX(), cursor->GetCursorY(), view->GetColNumInView());
     view->SetCursors(cursor->GetCursorX(), cursor->GetCursorY(), charCount, model->GetStart()); 

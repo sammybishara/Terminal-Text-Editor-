@@ -1,6 +1,6 @@
-// Test code for editor
+
 #include <iostream>
-#include "ECObserver2.h"
+#include "Observer2.h"
 #include "ECTextViewImp.h"
 
 using namespace  std;
@@ -17,8 +17,8 @@ int main(int argc, char *argv[])
     std::string filename((argv[1]));
 
     TextView *wnd = new TextView();
-    ECTextModel model(filename);
-    ECTextCtrl controller(wnd, &model, filename);
+    TextModel model(filename);
+    TextCtrl controller(wnd, &model, filename);
 
     // observer for adding characters
     AddTextObserver addText(&controller);
