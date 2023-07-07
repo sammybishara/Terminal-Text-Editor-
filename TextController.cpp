@@ -242,13 +242,20 @@ void TextCtrl :: ToggleBorder()
 
 void TextCtrl :: RefreshText()
 {
-   std::pair<std::vector<std::string>, std::vector<int> > pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
-   view->AddRows(pair.first, pair.second);
+
+    std::pair<std::vector<std::string>, std::vector<int> > pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
+    view->AddRows(pair.first, pair.second);
 }
 
 void TextCtrl :: RefreshCursor()
 {
     int charCount = model->GetCharCount(cursor->GetCursorX(), cursor->GetCursorY(), view->GetColNumInView());
-    view->SetCursors(cursor->GetCursorX(), cursor->GetCursorY(), charCount, model->GetStart()); 
+    std::pair<int, int> pos = cursor->ConvertCursors(charCount, view->GetColNumInView(), model->GetStart(), view->YOffset(), view->XOffset());
+    view->SetCursorY(pos.first);
+    view->SetCursorX(pos.second);
+
+    // view->SetCursors(cursor->GetCursorX(), cursor->GetCursorY(), charCount, model->GetStart(), model->GetTabCount(cursor->GetCursorY(), cursor->GetCursorX())); 
+
+
 }
 

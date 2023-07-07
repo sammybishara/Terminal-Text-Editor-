@@ -61,7 +61,7 @@ public:
     virtual void SetCursorX(int pos) { TextImp->SetCursorX(pos); }
     
     // Set the cursor position x and y coordinate
-    virtual void SetCursors(int x, int y, int charCount, int start);
+    // virtual void SetCursors(int x, int y, int charCount, int start, int tabCount);
 
     // clears status rows
     virtual void ClearStatusRows() { TextImp->ClearStatusRows(); }
@@ -160,7 +160,7 @@ public:
     void SetCursorX(int pos) { view->SetCursorX(pos); }
     
     // Set the cursor position x and y coordinate
-    void SetCursors(int x, int y, int charCount, int start) { view->SetCursors(x, y, charCount, start); }
+    // void SetCursors(int x, int y, int charCount, int start, int tabCount) { view->SetCursors(x, y, charCount, start, tabCount); }
 
     // clears status rows
     void ClearStatusRows() { view->ClearStatusRows(); }
@@ -223,7 +223,7 @@ public:
     int GetColNumInView() const {  return TextViewDec::GetColNumInView() - 7; }
     
     // Set the cursor position x and y coordinate
-    void SetCursors(int x, int y, int charCount, int start);
+    // void SetCursors(int x, int y, int charCount, int start, int tabCount);
 
     int XOffset() { return TextViewDec::XOffset() + 7;}
 
@@ -257,7 +257,7 @@ public:
     int GetColNumInView() const {  return TextViewDec::GetColNumInView() - 4; }
 
     // Set the cursor position x and y coordinate
-    void SetCursors(int x, int y, int charCount, int start);
+    // void SetCursors(int x, int y, int charCount, int start, int tabCount);
 
     int XOffset() { return TextViewDec::XOffset() + 2;}
 

@@ -14,7 +14,7 @@ TextModel :: ~TextModel()
 
 // adds character 
 void TextModel :: addChar(int row, int col, char ch, int screenWidth, int cursorY)
-{   
+{  
     if (document.size() == 0) addRow(std::string(1, ch));
     else if (document[row].size() == 0 || document[row].size() == col) document[row].push_back(ch);
     else document[row].insert(col, 1, ch);
@@ -67,16 +67,25 @@ void TextModel :: RemoveRow(const int x, const int y, const int size)
 int TextModel :: GetCharCount(int x, int y, int colSize)
 {
     int index = start;
-    int charCount = x;
+    int totalCount = 0;
+
+    for (int i = 0; i < x; ++i)
+    {
+        if (document[y][i] == '\t') totalCount += 8;
+        else totalCount += 1;
+    }
+
+    if (totalCount % colSize > 0) totalCount -= totalCount % colSize;
 
     while (index < y)
     {
-        charCount += document[index].size();
+        int charCount = document[index].size();
+        totalCount += charCount;
 
-        if (document[index].size() % colSize > 0) charCount -= document[index].size() % colSize;
+        if (charCount % colSize > 0) totalCount -= charCount % colSize;
         index++;
     }
-    return charCount;
+    return totalCount;
 }
 
 std::pair<std::vector<std::string>, std::vector<int> > TextModel :: ParseRows(int colSize, int rowSize)
@@ -100,18 +109,28 @@ std::pair<std::vector<std::string>, std::vector<int> > TextModel :: ParseRows(in
             ended = i - 1;
             break;
         }
+
         lineNumbers.push_back(count++);
         for (int i = 0; i < rowCount - 1; ++i) lineNumbers.push_back(-1);
-
         rowsFilled += rowCount;
 
-        // parse the rows for the column size
-        while (line.size() > colSize)
+        std::string row = "";
+        int rowSize = 0;
+
+        for (char c : line)
         {
-            ParsedDocument.push_back(line.substr(0, colSize));
-            line = line.substr(colSize, line.length() - colSize + 1);
+            row += c;
+
+            (c == '\t') ? rowSize += 8 : rowSize++;
+
+            if (rowSize == colSize)
+            {
+                ParsedDocument.push_back(row);
+                row = "";
+                rowSize = 0;
+            }
         }
-        if ((document[i].size() == 0 && line.size() == 0) || line.size() > 0) ParsedDocument.push_back(line);
+        if (rowSize> 0 || line.size() == 0)ParsedDocument.push_back(row);
     }
     std::pair<std::vector<std::string>, std::vector<int> > pair = std::make_pair(ParsedDocument, lineNumbers);
     return pair;
@@ -143,10 +162,28 @@ void TextModel :: MoveUp()
 int TextModel :: GetRowsOccupied(int lineNum, int colSize)
 {
     if (colSize == 0) return -1;
+
     std::string line = document[lineNum];
-    int rowCount = (int) line.size() / colSize;
+    int charCount = 0, rowCount = 0;
+
+    for (char c : line)
+    {
+        (c == '\t') ? charCount += 8 : charCount += 1;
+    }
+    rowCount = charCount / colSize;
     if (line.size() == 0 || line.size() % colSize) rowCount++;
 
     return rowCount;
+}
 
+int TextModel :: GetTabCount(int row, int col)
+{
+    std::string line = document[row];
+    int count = 0;
+
+    for (int i = 0; i < col; ++i) 
+    {   
+        if (line[i] == '\t') count++;
+    }
+    return count;
 }

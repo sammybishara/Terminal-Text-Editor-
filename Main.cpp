@@ -57,9 +57,6 @@ int main(int argc, char *argv[])
     AddBorderObserver addB(&controller);
     wnd->Attach(&addB);
 
-    ResizeObserver resize(&controller);
-    wnd->Attach(&resize);
-
     CopyObserver copy(&controller);
     wnd->Attach(&copy);
 

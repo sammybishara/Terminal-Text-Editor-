@@ -50,20 +50,6 @@ void TextView :: AddStatusRow( const std::string &statusMsgLeft, const std::stri
     TextImp->AddStatusRow(statusMsgLeft, statusMsgRight, fBlackBackground);
 }
 
-// converts cursor positions from the controller to the view 
-void TextView :: SetCursors(int x, int y, int charCount, int start)
-{
-    if (GetColNumInView() <= 0) return;
-
-    int newY = y - start;
-    int newX =  (x % GetColNumInView());
-
-    newY += (int) charCount / GetColNumInView();
-
-    TextImp->SetCursorX(newX);
-    TextImp->SetCursorY(newY);
-}
-
 // highlights the line numbers
 void LineNumberTextView :: AddRow(const std::string &strRow, int row, int colorStart, int numOfLines)
 {
@@ -98,19 +84,6 @@ std::vector<std::string> LineNumberTextView :: Embellish(std::vector<std::string
        }
     }
     return embellishedDoc;
-}
-
-void LineNumberTextView :: SetCursors(int x, int y, int charCount, int start)
-{
-    if (GetColNumInView() <= 0) return;
-
-    int newY = y - start + YOffset();
-    int newX =  (x % GetColNumInView()) + XOffset();
-
-    newY += (int) charCount / GetColNumInView();
-
-    SetCursorX(newX);
-    SetCursorY(newY);
 }
 
 // Text view with Borders
@@ -156,19 +129,6 @@ std::vector<std::string> BorderTextView :: Embellish(std::vector<std::string> &r
     lineNumbers.push_back(-1);
     
     return embellishedDoc;
-}
-
-void BorderTextView :: SetCursors(int x, int y, int charCount, int start)
-{
-    if (GetColNumInView() <= 0) return;
-
-    int newY = y - start + YOffset();
-    int newX =  (x % GetColNumInView()) + XOffset();
-
-    newY += (int) charCount / GetColNumInView();
-
-    SetCursorX(newX);
-    SetCursorY(newY);
 }
 
 

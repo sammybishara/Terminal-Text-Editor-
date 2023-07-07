@@ -65,6 +65,8 @@ public:
 
     int GetRowsOccupied(int lineNum, int colSize);
 
+    int GetTabCount(int row, int col);
+
 private:
     std::vector<std::string> document;
     std::string filename;

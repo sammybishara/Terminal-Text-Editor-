@@ -40,7 +40,7 @@ static bool IsRawMode()
 }
 
 static void WndAtExit(void) {
-    //disableRawMode(STDIN_FILENO);
+    // disableRawMode(STDIN_FILENO);
     if (IsRawMode()) {
         tcsetattr(STDIN_FILENO,TCSAFLUSH,&orig_termios);
         SetRawMode(false);
@@ -77,7 +77,6 @@ static void  EnableRawMode(int fd) {
 }
 
 
-
 //***********************************************************
 // Text view configuration
 
@@ -97,7 +96,7 @@ void ECTextViewConfig :: InitParams()
 {
     this->cx = 0;
     this->cy = 0;
-    //this->rawmode = false;
+    // this->rawmode = false;
 }
     
 // Init default window size
@@ -265,7 +264,7 @@ void ECTextViewImp :: FinishRowsBuffer()
     const char *row = (filerow >= GetNumRows() ) ? NULL :  GetRow(filerow);
     if (row) {
         for (int j = 0; j < status.GetCursorX(); j++) {
-            if (j < strlen(row)  && row[j] == TAB) cx += 7-((cx)%8);
+            if (j < strlen(row)  && row[j] == TAB) cx += 8-((cx)%8);
             cx++;
         }
     }

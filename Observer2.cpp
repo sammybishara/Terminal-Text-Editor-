@@ -5,8 +5,8 @@ using namespace std;
 
 void AddTextObserver :: Update() 
 {
-    char ch = static_cast<char>(ctrl->GetPressedKey()); 
-    if ((ch >= ' ' && ch <= '~' ) && ctrl->GetMode() == EDIT_MODE) ctrl->AddChar(ch);
+    char ch = ctrl->GetPressedKey(); 
+    if ((ch >= ' ' && ch <= '~')  && ctrl->GetMode() == EDIT_MODE) ctrl->AddChar(ch);
 }
 
 void RemoveTextObserver :: Update()
@@ -49,7 +49,6 @@ void RedoObserver :: Update()
     if (ctrl->GetMode() == COMMAND_MODE && ctrl->GetPressedKey() == CTRL_Y) ctrl->Redo();
 }
 
-
 void AddLineObserver :: Update()
 {
     if (ctrl->GetPressedKey() == CTRL_L ) ctrl->ToggleLineNumbers();
@@ -58,11 +57,6 @@ void AddLineObserver :: Update()
 void AddBorderObserver :: Update()
 {
     if (ctrl->GetPressedKey() == CTRL_B) ctrl->ToggleBorder();
-}
-
-//TODO
-void ResizeObserver :: Update()
-{
 }
 
 void CopyObserver :: Update() 

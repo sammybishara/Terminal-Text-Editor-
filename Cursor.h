@@ -3,6 +3,8 @@
 #ifndef ECCursor_h
 #define ECCursor_h
 
+#include<utility>
+
 
 // cursor class for managing the docs x and y positions 
 class Cursor
@@ -20,7 +22,9 @@ public:
 
     int GetCursorX() {return x;}
 
-    int GetCursorY() { return y; }
+    int GetCursorY() { return y;}
+
+    std::pair<int, int> ConvertCursors(int charCount, int colSize, int start, int yOffset, int xOffset);
 
 private:
     int x;

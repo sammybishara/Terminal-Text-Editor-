@@ -25,7 +25,12 @@ void InsertTextCommand :: UnExecute()
     // if y is in the current row and x is greater than size of current row, change x to size of the current row
     if (cursor->GetCursorY() == row && cursor->GetCursorX() > model->GetRow(row).size()) cursor->SetCursorX(model->GetRow(row).size());
     int charCount = model->GetCharCount(cursor->GetCursorX(), cursor->GetCursorY(), view->GetColNumInView());
-    view->SetCursors(cursor->GetCursorX(), cursor->GetCursorY(), charCount, model->GetStart());
+    // view->SetCursors(cursor->GetCursorX(), cursor->GetCursorY(), charCount, model->GetStart(), model->GetTabCount(cursor->GetCursorY(), cursor->GetCursorX()));
+
+    std::pair<int, int> pos = cursor->ConvertCursors(charCount, view->GetColNumInView(), model->GetStart(), view->YOffset(), view->XOffset());
+    view->SetCursorY(pos.first);
+    view->SetCursorX(pos.second);
+
 }
 
 // saves old character to be removed  and removes char and updates view with current text  
@@ -78,7 +83,8 @@ void BreakLineCommand :: UnExecute()
     }
 
     int charCount = model->GetCharCount(cursor->GetCursorX(), cursor->GetCursorY(), view->GetColNumInView());
-    view->SetCursors(cursor->GetCursorX(), cursor->GetCursorY(), charCount, model->GetStart());
+    // view->SetCursors(cursor->GetCursorX(), cursor->GetCursorY(), charCount, model->GetStart(), model->GetTabCount(cursor->GetCursorY(), cursor->GetCursorX()));
+    
     
     model->mergeline(row + 1);
     // std::vector<std::string> rows = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
@@ -105,7 +111,7 @@ void MergeLineCommand :: Execute()
     // std::vector<std::string> rows = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
     std::pair<std::vector<std::string>, std::vector<int> > pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
     std::vector<std::string> rows = pair.first;
-    std::vector<int> lineNumbers;
+    std::vector<int> lineNumbers = pair.second;
     view->AddRows(rows, lineNumbers);
 }
 
