@@ -3,47 +3,50 @@
 void InsertTextCommand :: Execute()
 {
     // adds character to the new model, clears view and updates it
-    model->addChar(row, col, chToInsert, view->GetColNumInView(), view->GetCursorY());
-    // std::vector<std::string> rows = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
-
+    model->AddChar(row, col, chToInsert, view->GetColNumInView());
     std::pair<std::vector<std::string>, std::vector<int> > pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
-    std::vector<std::string> rows = pair.first;
-    std::vector<int> lineNumbers = pair.second;
-    view->AddRows(rows, lineNumbers);
+
+    view->InitRows();
+    view->ClearColor();
+    view->AddRows(pair.first, pair.second);
+    view->Refresh();
 }
 
 // removes the character that was inserted
 void InsertTextCommand :: UnExecute()
 {
-    model->removeChar(row, col);
-    // std::vector<std::string> rows = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
+    model->RemoveChar(row, col);
     std::pair<std::vector<std::string>, std::vector<int> > pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
-    std::vector<std::string> rows = pair.first;   
-    std::vector<int> lineNumbers = pair.second;
-    view->AddRows(rows, lineNumbers);
-    
+    view->InitRows();
+    view->ClearColor();
+    view->AddRows(pair.first, pair.second);
+    AdjustCursor();
+    view->Refresh();
+}
+
+void InsertTextCommand :: AdjustCursor()
+{
     // if y is in the current row and x is greater than size of current row, change x to size of the current row
     if (cursor->GetCursorY() == row && cursor->GetCursorX() > model->GetRow(row).size()) cursor->SetCursorX(model->GetRow(row).size());
-    int charCount = model->GetCharCount(cursor->GetCursorX(), cursor->GetCursorY(), view->GetColNumInView());
-    // view->SetCursors(cursor->GetCursorX(), cursor->GetCursorY(), charCount, model->GetStart(), model->GetTabCount(cursor->GetCursorY(), cursor->GetCursorX()));
 
+    int charCount = model->GetCharCount(cursor->GetCursorX(), cursor->GetCursorY(), view->GetColNumInView());
     std::pair<int, int> pos = cursor->ConvertCursors(charCount, view->GetColNumInView(), model->GetStart(), view->YOffset(), view->XOffset());
     view->SetCursorY(pos.first);
-    view->SetCursorX(pos.second);
-
+    view->SetCursorX(pos.second); 
 }
 
 // saves old character to be removed  and removes char and updates view with current text  
 void RemoveTextCommand :: Execute()
 {
     chToRemove = model->GetRow(row)[col - 1];
-    model->removeChar(row, col - 1);
+    model->RemoveChar(row, col - 1);
 
     // std::vector<std::string> rows = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
     std::pair<std::vector<std::string>, std::vector<int> > pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
-    std::vector<std::string> rows = pair.first;
-    std::vector<int> lineNumbers = pair.second;
-    view->AddRows(rows, lineNumbers);
+    view->InitRows();
+    view->ClearColor();
+    view->AddRows(pair.first, pair.second);
+    view->Refresh();
 
     // if this command is being redone and y is in the current row and x is greater than size of current row, change x to size of the row 
     if (ran == true && cursor->GetCursorY() == row && cursor->GetCursorX() > model->GetRow(row).size()) cursor->SetCursorX(model->GetRow(row).size());
@@ -53,23 +56,25 @@ void RemoveTextCommand :: Execute()
 // undo method that inserts the character that was removed 
 void RemoveTextCommand :: UnExecute()
 {
-    model->addChar(row, col - 1, chToRemove, view->GetColNumInView(), view->GetCursorY());
+    model->AddChar(row, col - 1, chToRemove, view->GetColNumInView());
     // std::vector<std::string> rows = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
     std::pair<std::vector<std::string>, std::vector<int> > pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
-    std::vector<std::string> rows = pair.first;
-    std::vector<int> lineNumbers = pair.second;
-    view->AddRows(rows, lineNumbers);
+    view->InitRows();
+    view->ClearColor();
+    view->AddRows(pair.first, pair.second);
+    view->Refresh();
 }
 
 // breaks the line and updates the model 
 void BreakLineCommand :: Execute()
 {
-    model->breakLine(row, col);
+    model->BreakLine(row, col);
     // std::vector<std::string> rows = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
     std::pair<std::vector<std::string>, std::vector<int> > pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
-    std::vector<std::string> rows = pair.first;
-    std::vector<int> lineNumbers = pair.second;
-    view->AddRows(rows, lineNumbers); 
+    view->InitRows();
+    view->ClearColor();
+    view->AddRows(pair.first, pair.second); 
+    view->Refresh();
 }
 
 // redo command that merges the broken line 
@@ -86,12 +91,13 @@ void BreakLineCommand :: UnExecute()
     // view->SetCursors(cursor->GetCursorX(), cursor->GetCursorY(), charCount, model->GetStart(), model->GetTabCount(cursor->GetCursorY(), cursor->GetCursorX()));
     
     
-    model->mergeline(row + 1);
+    model->Mergeline(row + 1);
     // std::vector<std::string> rows = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
     std::pair<std::vector<std::string>, std::vector<int> > pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
-    std::vector<std::string> rows = pair.first;
-    std::vector<int> lineNumbers = pair.second;
-    view->AddRows(rows, lineNumbers);
+    view->InitRows();
+    view->ClearColor();
+    view->AddRows(pair.first, pair.second);
+    view->Refresh();
 }
 
 
@@ -106,38 +112,46 @@ void MergeLineCommand :: Execute()
     else if (ran == false) ran = true;
 
     col = model->GetRow(row - 1).size();
-    model->mergeline(row);
+    model->Mergeline(row);
 
     // std::vector<std::string> rows = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
     std::pair<std::vector<std::string>, std::vector<int> > pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
-    std::vector<std::string> rows = pair.first;
-    std::vector<int> lineNumbers = pair.second;
-    view->AddRows(rows, lineNumbers);
+    view->InitRows(); 
+    view->ClearColor();
+    view->AddRows(pair.first, pair.second);
+    view->Refresh();
 }
 
 void MergeLineCommand :: UnExecute()
 {
-    model->breakLine(row - 1, col);
+    model->BreakLine(row - 1, col);
 
     // std::vector<std::string> rows = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
     std::pair<std::vector<std::string>, std::vector<int> > pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
-    std::vector<std::string> rows = pair.first;
-    std::vector<int> lineNumbers = pair.second;
-    view->AddRows(rows, lineNumbers);
+    view->InitRows();
+    view->ClearColor();
+    view->AddRows(pair.first, pair.second);
+    view->Refresh();
 }
 
 void PasteCommand :: Execute()
 {
     model->Paste(strToPaste, col, row);
     std::pair<std::vector<std::string>, std::vector<int> > pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
+    view->InitRows();
+    view->ClearColor();
     view->AddRows(pair.first, pair.second);
+    view->Refresh();
 }
 
 void PasteCommand :: UnExecute()
 {
     model->RemoveRow(col, row, strToPaste.size());
     auto pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
+    view->InitRows();
+    view->ClearColor();
     view->AddRows(pair.first, pair.second);
+    view->Refresh();
 }
 
 CommandSet :: ~CommandSet()

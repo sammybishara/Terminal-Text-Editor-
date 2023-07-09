@@ -33,6 +33,7 @@ public:
     virtual void UnExecute();
 
 private:
+    void AdjustCursor();
     TextView *view;
     TextModel *model;
     Cursor *cursor;
@@ -59,6 +60,7 @@ public:
     virtual void UnExecute();
 
 private:
+    void AdjustCursor();
     TextView *view;
     TextModel *model;
     Cursor *cursor;
@@ -112,6 +114,7 @@ public:
     virtual void UnExecute();
 
 private:
+    void AdjustCursor();
     TextView *view;
     TextModel *model;
     Cursor *cursor;
@@ -137,6 +140,7 @@ public:
     virtual void UnExecute();
 
 private:
+    void AdjustCursor();
     TextView *view;
     TextModel *model;
     Cursor *cursor;

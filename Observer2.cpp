@@ -22,8 +22,9 @@ void MoveCursorHorizonal :: Update()
 
 void MoveCursorVertical :: Update()
 {
-    if (ctrl->GetPressedKey() == ARROW_UP) ctrl->MoveUp();
-    else if (ctrl->GetPressedKey() == ARROW_DOWN) ctrl->MoveDown();
+    int ch = ctrl->GetPressedKey();
+    if (ch == ARROW_UP || ch == PAGE_UP) ctrl->MoveUp();
+    else if (ch == ARROW_DOWN || ch == PAGE_DOWN) ctrl->MoveDown();
 }
 
 void BreakLine :: Update()

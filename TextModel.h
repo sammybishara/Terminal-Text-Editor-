@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <utility>
+#include <math.h>
 
 
 class TextModel 
@@ -16,29 +17,29 @@ public:
     TextModel(const std::string filename) :
     filename(filename),
     start(0),
-    ended(-1)
+    ended(0)
     {
     }
 
     virtual ~TextModel();
 
     // updates the document and calls the controller to display
-    void addRow(const std::string row) { document.push_back(row); }
+    void AddRow(const std::string row) { document.push_back(row); }
 
     // clears the document 
     void Clear() { document.clear(); }
 
     // add a character 
-    void addChar(int row, int col, char ch, int screenWidth, int cursorY);
+    void AddChar(int row, int col, char ch, int screenWidth);
 
     // removes a character 
-    void removeChar(int row, int col);
+    void RemoveChar(int row, int col);
 
     // breaks the line 
-    void breakLine(int row, int col);
+    void BreakLine(int row, int col);
 
     // merges two lines together for backspace 
-    void mergeline(int row);
+    void Mergeline(int row);
 
     // Paste the given row into the x and y position
     void Paste(const std::string strToPaste, const int x, const int y);
@@ -57,21 +58,22 @@ public:
 
     int GetSize() { return document.size();}
 
-    void MoveDown(int colSize);
+    void MoveDown(int colSize, bool nextLine);
 
     void MoveUp();
 
-    int GetStart() {return start;}
+    unsigned int GetStart() {return start;}
+
+    unsigned int GetEnd() {return ended;}
 
     int GetRowsOccupied(int lineNum, int colSize);
 
-    int GetTabCount(int row, int col);
 
 private:
     std::vector<std::string> document;
     std::string filename;
-    int start;
-    int ended;
+    unsigned int start;
+    unsigned int ended;
 };
 
 #endif

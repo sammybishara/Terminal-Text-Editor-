@@ -46,7 +46,6 @@ enum KEY_ACTION{
     CTRL_Y = 25,        /* Ctrl-y */
     CTRL_Z = 26,        /* Ctrl-z */
     ESC = 27,           /* Escape */
-    RESIZE = 28,
     SLASH = 47,         /* Forward slash */
     BACKSPACE =  127,   /* Backspace */
     /* The following are just soft codes, not really reported by the

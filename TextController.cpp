@@ -24,7 +24,8 @@ void TextCtrl :: ReadFromFile()
     
     if (infile.is_open())
     {
-        while (std::getline(infile, line)) model->addRow(line);
+        while (std::getline(infile, line)) model->AddRow(line);
+        
         RefreshText();
         infile.close();
     }
@@ -36,27 +37,37 @@ TextCtrl :: ~TextCtrl()
     delete commandH;
     delete cursor;
 
-    if (view != nullptr)
-    {
-        delete view;
-        view = NULL;
-    }
     // if there is an empty command set delete it
     if (cmdSet != nullptr) 
     {
         delete cmdSet;
         cmdSet = NULL;
     } 
+
+    while (view != nullptr)
+    {
+        TextView *prev = view->PreviousView();
+        delete view;
+        view = prev;
+    }
 }
 
 // creates and executes a new add text command and moves cursor to the right 
-void TextCtrl :: AddChar(char ch)
+void TextCtrl :: AddChar(const char ch)
 {
     InsertTextCommand *addText = new InsertTextCommand(view, model, ch, cursor);
     cmdSet->ExecuteCmd(addText);
 
-    // moves cursor by 1
-    cursor->SetCursorX(cursor->GetCursorX() + 1);
+    int y = view->GetCursorY();
+    int x = view->GetCursorX();
+
+    // if cursor is at the bottom right corner Scroll the view down to show the continued portion of the wrapped line
+    if (view->GetRowNumInView() - 1  + view->YOffset() == y  && x ==  view->GetColNumInView() - 1  + view->XOffset())
+    {
+        ScrollDown(false);
+    }
+    // moves cursor over by 1
+    cursor->IncrementX();
     RefreshCursor();
 }
 
@@ -74,6 +85,7 @@ void TextCtrl :: Delete()
 void TextCtrl :: Copy()
 {
     std::string fullRow = model->GetRow(cursor->GetCursorY());
+    // starting point of the current row where the cursor is postioned 
     int pos = cursor->GetCursorX() - view->GetCursorX();
     copiedLine = fullRow.substr(pos, view->GetColNumInView());
 }
@@ -102,7 +114,6 @@ void TextCtrl :: RemoveChar()
 void TextCtrl :: MoveLeft()
 {
     // checks if cursor is not at beginning of row, else move left
-    if (model->GetSize() == 0) return;
     if (cursor->GetCursorX() > 0) cursor->SetCursorX(cursor->GetCursorX() - 1);
     RefreshCursor();
 }
@@ -112,7 +123,7 @@ void TextCtrl :: MoveRight()
 {
     if (model->GetSize() == 0) return;
     // checks if cursor is not greater than size() of current row, else move right 
-    if (cursor->GetCursorX() < model->GetRow(cursor->GetCursorY()).size()) cursor->SetCursorX(cursor->GetCursorX() + 1);
+    if (cursor->GetCursorX() < model->GetRow(cursor->GetCursorY()).size()) cursor->IncrementX();
     RefreshCursor();
 }
 
@@ -121,20 +132,24 @@ void TextCtrl :: MoveDown()
 {
     if (model->GetSize() == 0) return;
 
-    int rows = model->GetRowsOccupied(cursor->GetCursorY(), view->GetColNumInView());
+    int endOfPage = model->GetEnd();
     // moves y down if possible, checks if x is greater than new row's size, if it set it to the size of the new row
-    if (cursor->GetCursorY() + 1 < model->GetSize()) cursor->SetCursorY(cursor->GetCursorY() + 1);
+    if (cursor->GetCursorY() + 1 < model->GetSize()) cursor->IncrementY();
     if (model->GetRow(cursor->GetCursorY()).size() < cursor->GetCursorX()) cursor->SetCursorX(model->GetRow(cursor->GetCursorY()).size());
 
-    std::pair<std::vector<std::string>, std::vector<int> > pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
-    std::vector<std::string> currentRows = pair.first;
 
-    if (currentRows.size() - 1 - view->YOffset() - rows < view->GetCursorY() && cursor->GetCursorY() < model->GetSize() - 1) 
+    if (cursor->GetCursorY() > endOfPage) 
     {
-        model->MoveDown(view->GetColNumInView());
-        RefreshText();
+        ScrollDown(true);
     }
+    else RefreshCursor();
+}
+
+void TextCtrl :: ScrollDown(bool nextLine)
+{
+    model->MoveDown(view->GetColNumInView(), nextLine);
     RefreshCursor();
+    RefreshText();
 }
 
 // moves cursor up 
@@ -142,12 +157,12 @@ void TextCtrl :: MoveUp()
 {   
     if (model->GetSize() == 0 ) return;
 
-    int pos = view->GetCursorY();
+    int startOfPage = model->GetStart();
     // moves y up if possible, checks if x is greater than new row's size, it it is, set it to the size of the new row
     if (cursor->GetCursorY() > 0) cursor->SetCursorY(cursor->GetCursorY() - 1);
     if (model->GetRow(cursor->GetCursorY()).size() < cursor->GetCursorX()) cursor->SetCursorX(model->GetRow(cursor->GetCursorY()).size());
 
-    if (view->GetCursorY() == 0 + view->YOffset()) 
+    if (cursor->GetCursorY() < startOfPage) 
     {
         model->MoveUp();
         RefreshText();
@@ -230,21 +245,26 @@ void TextCtrl :: ToggleBorder()
         delete view;
         view = previousView;
         borders = false;
+        RefreshText();
+        RefreshCursor(); 
     }
     else if (!borders) 
     {
         view = new BorderTextView(view);
         borders = true;
+        RefreshText();
+        RefreshCursor();
     }
-    RefreshText();
-    RefreshCursor();
 }
 
 void TextCtrl :: RefreshText()
 {
 
     std::pair<std::vector<std::string>, std::vector<int> > pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
+    view->InitRows();
+    view->ClearColor();
     view->AddRows(pair.first, pair.second);
+    view->Refresh();
 }
 
 void TextCtrl :: RefreshCursor()
@@ -253,9 +273,5 @@ void TextCtrl :: RefreshCursor()
     std::pair<int, int> pos = cursor->ConvertCursors(charCount, view->GetColNumInView(), model->GetStart(), view->YOffset(), view->XOffset());
     view->SetCursorY(pos.first);
     view->SetCursorX(pos.second);
-
-    // view->SetCursors(cursor->GetCursorX(), cursor->GetCursorY(), charCount, model->GetStart(), model->GetTabCount(cursor->GetCursorY(), cursor->GetCursorX())); 
-
-
 }
 

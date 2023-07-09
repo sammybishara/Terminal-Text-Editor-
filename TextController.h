@@ -33,7 +33,7 @@ public:
     void Show(){ view->Show();}
 
     // add a character
-    void AddChar(char ch);
+    void AddChar(const char ch);
 
     // Refreshs the cursors
     void RefreshText();
@@ -81,12 +81,14 @@ public:
 
 private:
     // removes a char
-    // method is private since delete will call it if it decides delete is possible 
     void RemoveChar();
     // merges the current line with the line directly before it 
     void MergeLine();
-
     void ReadFromFile();
+    // scrolls the page up
+    void ScrollUp();
+    // scrolls the page down
+    void ScrollDown(bool nextLine);
 
     TextView *view;
     TextModel *model;

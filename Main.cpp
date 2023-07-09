@@ -48,15 +48,19 @@ int main(int argc, char *argv[])
     UndoObserver undo(&controller);
     wnd->Attach(&undo);
 
+    // observer for redoing commands
     RedoObserver redo(&controller);
     wnd->Attach(&redo);
 
+    // observer for adding a new line
     AddLineObserver addL(&controller);
     wnd->Attach(&addL);
 
+    // observer for adding a boarder to the view
     AddBorderObserver addB(&controller);
     wnd->Attach(&addB);
 
+    // observer for copying a line
     CopyObserver copy(&controller);
     wnd->Attach(&copy);
 

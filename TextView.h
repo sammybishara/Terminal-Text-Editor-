@@ -35,7 +35,7 @@ public:
     virtual void InitRows() { TextImp->InitRows(); }
     
     // Add an entire row to the view
-    virtual void AddRow(const std::string &strRow, int row, int colorStart, int numOfLines);
+    virtual void AddRow(const std::string &strRow, int row, int colorStart);
     
     // ADDS an entire set of Rows
     virtual void AddRows(std::vector<std::string> rows, std::vector<int> lineNumbers);
@@ -43,7 +43,7 @@ public:
     virtual std::vector<std::string> Embellish(std::vector<std::string> &rows, int screenWidth, std::vector<int> &lineNumbers) { return rows; }
 
     // Get number of rows in view
-    virtual int GetRowNumInView() const { return TextImp->GetRowNumInView(); }
+    virtual int GetRowNumInView() const { return TextImp->GetRowNumInView();}
     
     // Get number of columns in view
     virtual int GetColNumInView() const {  return TextImp->GetColNumInView() - 1;}
@@ -127,9 +127,9 @@ public:
     void InitRows() { view->InitRows(); }
     
     // Add an entire row to the view
-    virtual void AddRow(const std::string &strRow, int row, int colorStart, int numOfLines) 
+    virtual void AddRow(const std::string &strRow, int row, int colorStart) 
     {
-        view->AddRow(strRow, row, colorStart, numOfLines);
+        view->AddRow(strRow, row, colorStart);
     }
     
     // ADDS an entire set of Rows
@@ -138,7 +138,7 @@ public:
         view->AddRows(rows, lineNumbers);
     }
 
-    std::vector<std::string> Embellish(std::vector<std::string> &rows, int screenWidth, std::vector<int> &lineNumbers) 
+    virtual std::vector<std::string> Embellish(std::vector<std::string> &rows, int screenWidth, std::vector<int> &lineNumbers) 
     {
         return view->Embellish(rows, screenWidth, lineNumbers);
     }
@@ -206,10 +206,10 @@ public:
     LineNumberTextView(TextView *view) :
     TextViewDec(view) {}
 
-    ~LineNumberTextView() {}
+    virtual ~LineNumberTextView() {}
 
     // Add an entire row to the view
-    void AddRow(const std::string &strRow, int row, int colorStart, int numOfLines);
+    void AddRow(const std::string &strRow, int row, int colorStart);
     
     // ADDS an entire set of Rows
     void AddRows(std::vector<std::string> rows, std::vector<int> lineNumbers);
@@ -217,7 +217,7 @@ public:
     std::vector<std::string> Embellish(std::vector<std::string> &rows, int screenWidth, std::vector<int> &lineNumbers);
 
     // Get number of rows in view
-    int GetRowNumInView() const { return TextViewDec::GetRowNumInView(); }
+    int GetRowNumInView() const { return TextViewDec::GetRowNumInView() - 2; }
     
     // Get number of columns in view
     int GetColNumInView() const {  return TextViewDec::GetColNumInView() - 7; }
@@ -237,13 +237,13 @@ public:
 class BorderTextView : public TextViewDec
 {
 public:
-    BorderTextView( TextView *view) :
+    BorderTextView(TextView *view) :
     TextViewDec(view) {}
 
-    ~BorderTextView() {}
+    virtual ~BorderTextView() {}
     
     // Add an entire row to the view
-    void AddRow(const std::string &strRow, int row, int colorStart, int numOfLines);
+    void AddRow(const std::string &strRow, int row, int colorStart);
     
     // ADDS an entire set of Rows
     void AddRows(std::vector<std::string> rows, std::vector<int> lineNumbers);
@@ -251,13 +251,10 @@ public:
     std::vector<std::string> Embellish(std::vector<std::string> &rows, int screenWidth, std::vector<int> &lineNumbers);
 
     // Get number of rows in view
-    int GetRowNumInView() const { return TextViewDec::GetRowNumInView() - 2; }
+    int GetRowNumInView() const { return (TextViewDec::GetRowNumInView() - 2); }
     
     // Get number of columns in view
-    int GetColNumInView() const {  return TextViewDec::GetColNumInView() - 4; }
-
-    // Set the cursor position x and y coordinate
-    // void SetCursors(int x, int y, int charCount, int start, int tabCount);
+    int GetColNumInView() const { return TextViewDec::GetColNumInView() - 4; }
 
     int XOffset() { return TextViewDec::XOffset() + 2;}
 
@@ -266,8 +263,6 @@ public:
     // returns the number of special columns that are occupied by the view 
     int GetColsOccupied() { return TextViewDec::GetColsOccupied() + 4; }
 
-private:
-    TextView *view;
 };
 
 #endif

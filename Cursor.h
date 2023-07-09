@@ -5,7 +5,6 @@
 
 #include<utility>
 
-
 // cursor class for managing the docs x and y positions 
 class Cursor
 {
@@ -16,19 +15,24 @@ public:
 
     virtual ~Cursor() {}
 
-    void SetCursorX(int newX) { x = newX;}
+    void SetCursorX(unsigned int newX) { x = newX;}
 
-    void SetCursorY(int newY) { y = newY;}
+    void SetCursorY(unsigned int newY) { y = newY;}
+
+    void IncrementY() { y += 1;}
+
+    void IncrementX() { x += 1; }
 
     int GetCursorX() {return x;}
 
     int GetCursorY() { return y;}
 
+
     std::pair<int, int> ConvertCursors(int charCount, int colSize, int start, int yOffset, int xOffset);
 
 private:
-    int x;
-    int y;
+    unsigned int x;
+    unsigned int y;
 };
 
 
