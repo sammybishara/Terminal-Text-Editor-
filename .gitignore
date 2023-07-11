@@ -1,2 +1,12 @@
-# Ignore Test File
+
+# Ignore files for tests
+removeTabs.cpp
+removeTabs
 f.txt
+file.txt
+input.txt
+
+# ignore vs code files 
+.vscode/
+
+
