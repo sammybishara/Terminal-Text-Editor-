@@ -21,11 +21,10 @@ void TextCtrl :: ReadFromFile()
 {
     std::ifstream infile(file);
     std::string line;
-    
+    // Retrieves all rows from the given file name, adds it to the view and closes orignal file
     if (infile.is_open())
     {
         while (std::getline(infile, line)) model->AddRow(line);
-        
         RefreshText();
         infile.close();
     }
@@ -33,7 +32,6 @@ void TextCtrl :: ReadFromFile()
 
 TextCtrl :: ~TextCtrl()
 {
-    
     delete commandH;
     delete cursor;
 
@@ -43,7 +41,7 @@ TextCtrl :: ~TextCtrl()
         delete cmdSet;
         cmdSet = NULL;
     } 
-
+    // delete all textview objects that were created 
     while (view != nullptr)
     {
         TextView *prev = view->PreviousView();
@@ -57,6 +55,7 @@ void TextCtrl :: AddChar(const char ch)
 {
     InsertTextCommand *addText = new InsertTextCommand(view, model, ch, cursor);
     cmdSet->ExecuteCmd(addText);
+    RefreshText();
 
     int y = view->GetCursorY();
     int x = view->GetCursorX();
@@ -66,9 +65,8 @@ void TextCtrl :: AddChar(const char ch)
     {
         ScrollDown(false);
     }
-    // moves cursor over by 1
-    cursor->IncrementX();
-    RefreshCursor();
+    // moves cursor right over by 1
+    MoveRight();
 }
 
 void TextCtrl :: Delete()
@@ -85,16 +83,17 @@ void TextCtrl :: Delete()
 void TextCtrl :: Copy()
 {
     std::string fullRow = model->GetRow(cursor->GetCursorY());
-    // starting point of the current row where the cursor is postioned 
+    // gets starting point of the current row where the cursor is postioned and copies the row
     int pos = cursor->GetCursorX() - view->GetCursorX();
     copiedLine = fullRow.substr(pos, view->GetColNumInView());
 }
 
-// TODO create paste command
+// creates a new paste command and pastes it to the view
 void TextCtrl :: Paste()
 {
     cmdSet = new CommandSet();
     PasteCommand *paste = new PasteCommand(view, model, cursor, copiedLine);
+    RefreshText();
     cmdSet->ExecuteCmd(paste);
     commandH->AddCommand(cmdSet);
     cmdSet = NULL;
@@ -104,17 +103,16 @@ void TextCtrl :: RemoveChar()
 {
     RemoveTextCommand *rText = new RemoveTextCommand(view, model, cursor);
     cmdSet->ExecuteCmd(rText);
-    
-    // sets cursor back by one 
-    cursor->SetCursorX(cursor->GetCursorX() - 1);
-    RefreshCursor();
+    RefreshText();
+    // sets cursor left by one
+    MoveLeft();
 }
 
 // moves the cursor left 
 void TextCtrl :: MoveLeft()
 {
     // checks if cursor is not at beginning of row, else move left
-    if (cursor->GetCursorX() > 0) cursor->SetCursorX(cursor->GetCursorX() - 1);
+    if (cursor->GetCursorX() > 0) cursor->DecrementX();
     RefreshCursor();
 }
 
@@ -122,8 +120,10 @@ void TextCtrl :: MoveLeft()
 void TextCtrl :: MoveRight()
 {
     if (model->GetSize() == 0) return;
+    int y = cursor->GetCursorY();
+    std::string curRow = model->GetRow(y);
     // checks if cursor is not greater than size() of current row, else move right 
-    if (cursor->GetCursorX() < model->GetRow(cursor->GetCursorY()).size()) cursor->IncrementX();
+    if (cursor->GetCursorX() < curRow.size()) cursor->IncrementX();
     RefreshCursor();
 }
 
@@ -137,11 +137,7 @@ void TextCtrl :: MoveDown()
     if (cursor->GetCursorY() + 1 < model->GetSize()) cursor->IncrementY();
     if (model->GetRow(cursor->GetCursorY()).size() < cursor->GetCursorX()) cursor->SetCursorX(model->GetRow(cursor->GetCursorY()).size());
 
-
-    if (cursor->GetCursorY() > endOfPage) 
-    {
-        ScrollDown(true);
-    }
+    if (cursor->GetCursorY() > endOfPage) ScrollDown(true);
     else RefreshCursor();
 }
 
@@ -175,11 +171,10 @@ void TextCtrl :: BreakLine()
 {
     BreakLineCommand *breakL = new BreakLineCommand(view, model, cursor);
     cmdSet->ExecuteCmd(breakL);
-
-    // moves cursor to the beginning of the new row
-    cursor->SetCursorY(cursor->GetCursorY() + 1);
+    RefreshText();
+    // moves cursor to the beginning of the new row below
     cursor->SetCursorX(0);
-    RefreshCursor();
+    MoveDown();
 }
 
 
@@ -189,11 +184,10 @@ void TextCtrl :: MergeLine()
     int newX = model->GetRow(cursor->GetCursorY() - 1).size();
     MergeLineCommand *mergeC = new MergeLineCommand(view, model, cursor);
     cmdSet->ExecuteCmd(mergeC);
-
+    RefreshText();
     // moves cursor to the end of the previous row before the merge 
-    cursor->SetCursorY(cursor->GetCursorY() - 1);
     cursor->SetCursorX(newX);
-    RefreshCursor();
+    MoveUp();
 }
 
 // changes mode to the oposite mode 
@@ -218,25 +212,40 @@ void TextCtrl :: ChangeMode(int newMode)
     }
 }
 
+void TextCtrl :: Undo()
+{
+    commandH->Undo();
+    RefreshText();
+}
+
+void TextCtrl :: Redo()
+{
+    commandH->Redo();
+    RefreshText();
+}
+
+// toggles between line numbers
 void TextCtrl :: ToggleLineNumbers()
 {
     if (dynamic_cast<LineNumberTextView*>(view)) 
     {
-        // view = view->PreviousView();
         TextView *previousView = view->PreviousView();
         delete view;
         view = previousView;
         lineNumbers = false; 
+        RefreshText();
+        RefreshCursor();
     }
     else if (!lineNumbers) 
     {
         view = new LineNumberTextView(view);
         lineNumbers = true;
+        RefreshText();
+        RefreshCursor();
     }
-    RefreshText();
-    RefreshCursor();
 }
 
+// toggle betweens boarder 
 void TextCtrl :: ToggleBorder()
 {
     if (dynamic_cast<BorderTextView*>(view)) 
@@ -257,16 +266,17 @@ void TextCtrl :: ToggleBorder()
     }
 }
 
+// Parses the rows and adds the rows to the view. Color is cleared and then view is refreshed
 void TextCtrl :: RefreshText()
 {
-
-    std::pair<std::vector<std::string>, std::vector<int> > pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
+    auto pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
     view->InitRows();
     view->ClearColor();
     view->AddRows(pair.first, pair.second);
     view->Refresh();
 }
 
+// Screen Cursors are recalculated and set in the view
 void TextCtrl :: RefreshCursor()
 {
     int charCount = model->GetCharCount(cursor->GetCursorX(), cursor->GetCursorY(), view->GetColNumInView());

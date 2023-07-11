@@ -64,7 +64,7 @@ void LineNumberTextView :: AddRows(std::vector<std::string> rows, std::vector<in
 std::vector<std::string> LineNumberTextView :: Embellish(std::vector<std::string> &rows, int screenWidth, std::vector<int> &lineNumbers)
 {
     std::vector<std::string> embellishedDoc = TextViewDec::Embellish(rows, screenWidth, lineNumbers);
-    
+
     if (embellishedDoc.size() != lineNumbers.size()) return embellishedDoc;
 
     for (unsigned int i = 0; i < lineNumbers.size(); ++i)
@@ -89,7 +89,6 @@ void BorderTextView :: AddRows(std::vector<std::string> rows, std::vector<int> l
 {
     int index = 0;
     std::vector<std::string> embellishedDoc = Embellish(rows, GetColNumInView(), lineNumbers);
-
     // signals add row to color entire top portion of boarder
     for (std::string row : embellishedDoc) AddRow(row, index++, 0);
 }

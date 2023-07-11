@@ -125,7 +125,6 @@ void TextModel :: MoveDown(int colSize, bool nextLine)
     // Get the rows occupied by the new row that is visible when the screen moves down
     int rows;
     (nextLine) ? rows = GetRowsOccupied(ended + 1, colSize) : rows = GetRowsOccupied(ended, colSize);
-
     // moves the start index forward until there is enough space for the rows occupied by the new line 
     while (rows > 0)
     {
@@ -145,7 +144,6 @@ void TextModel :: MoveUp()
 int TextModel :: GetRowsOccupied(int lineNum, int colSize)
 {
     if (colSize == 0 || lineNum >= document.size() || lineNum < 0) return -1;
-
     std::string line = document[lineNum];
     int rowCount = static_cast<int>(std::floor(line.size() / colSize));
     if (line.size() == 0 || line.size() % colSize != 0) rowCount++;

@@ -70,13 +70,15 @@ public:
     int GetMode() {return mode;}
 
     // undo last command
-    void Undo() { commandH->Undo(); }
+    void Undo();
 
     // redo last command that was undone 
-    void Redo() { commandH->Redo();}
+    void Redo();
 
+    // Toggles the line numbers
     void ToggleLineNumbers();
 
+    // Toggles the boarders
     void ToggleBorder();
 
 private:

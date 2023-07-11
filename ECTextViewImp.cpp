@@ -89,7 +89,7 @@ ECTextViewConfig :: ECTextViewConfig()
 
 void ECTextViewConfig :: Dump() const
 {
-    cout << "Window size: [" << screenrows << "," << screencols << "]\n";
+    // cout << "Window size: [" << screenrows << "," << screencols << "]\n";
 }
 
 void ECTextViewConfig :: InitParams()

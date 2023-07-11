@@ -5,7 +5,7 @@
 
 #include<utility>
 
-// cursor class for managing the docs x and y positions 
+// cursor class for managing the models x and y positions 
 class Cursor
 {
 public:
@@ -23,10 +23,13 @@ public:
 
     void IncrementX() { x += 1; }
 
+    void DecrementY() { y -= 1;}
+
+    void DecrementX() { x -= 1;}
+
     int GetCursorX() {return x;}
 
     int GetCursorY() { return y;}
-
 
     std::pair<int, int> ConvertCursors(int charCount, int colSize, int start, int yOffset, int xOffset);
 

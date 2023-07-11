@@ -32,6 +32,7 @@ public:
     virtual ~RemoveTextObserver() {}
         
     virtual void Update();
+
 private:
     TextCtrl *ctrl;
 };
@@ -173,7 +174,7 @@ private:
     TextCtrl *ctrl;
 };
 
-//Observer for pasting the row that is currently coppied 
+// Observer for pasting the row that is currently coppied 
 class PasteObserver : public ECObserver
 {
 public:

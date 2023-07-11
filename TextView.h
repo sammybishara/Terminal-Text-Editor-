@@ -217,7 +217,7 @@ public:
     std::vector<std::string> Embellish(std::vector<std::string> &rows, int screenWidth, std::vector<int> &lineNumbers);
 
     // Get number of rows in view
-    int GetRowNumInView() const { return TextViewDec::GetRowNumInView() - 2; }
+    int GetRowNumInView() const { return TextViewDec::GetRowNumInView(); }
     
     // Get number of columns in view
     int GetColNumInView() const {  return TextViewDec::GetColNumInView() - 7; }

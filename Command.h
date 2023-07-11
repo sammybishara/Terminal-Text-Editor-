@@ -15,10 +15,11 @@ public:
     virtual void UnExecute() = 0;
 };
 
+// command to insert a character 
 class InsertTextCommand : public Command 
 {   
 public:
-    InsertTextCommand(TextView *view, TextModel *model, char chToInsert, Cursor *cursor) :
+    InsertTextCommand(TextView* const view, TextModel* const model, const char chToInsert, Cursor* const cursor) :
     view(view),
     model(model),
     chToInsert(chToInsert),
@@ -28,24 +29,24 @@ public:
 
     virtual ~InsertTextCommand() {}
 
-    virtual void Execute();
+    void Execute();
 
-    virtual void UnExecute();
+    void UnExecute();
 
 private:
     void AdjustCursor();
-    TextView *view;
-    TextModel *model;
-    Cursor *cursor;
-    char chToInsert;
-    int row;
-    int col;
+    TextView* const view;
+    TextModel* const model;
+    Cursor* const cursor;
+    const char chToInsert;
+    const int row;
+    const int col;
 };
 
 class RemoveTextCommand : public Command 
 {   
 public:
-    RemoveTextCommand(TextView *view, TextModel *model, Cursor *cursor) :
+    RemoveTextCommand(TextView* const view, TextModel* const model, Cursor* const cursor) :
     view(view),
     model(model),
     row(cursor->GetCursorY()),
@@ -53,19 +54,19 @@ public:
     cursor(cursor),
     ran(false) {}
 
-    virtual ~RemoveTextCommand() {}
+    ~RemoveTextCommand() {}
 
-    virtual void Execute();
+    void Execute();
 
-    virtual void UnExecute();
+    void UnExecute();
 
 private:
     void AdjustCursor();
-    TextView *view;
-    TextModel *model;
-    Cursor *cursor;
+    TextView* const view;
+    TextModel* const model;
+    Cursor* const cursor;
     const int row;
-    int col;
+    const int col;
     char chToRemove;
     bool ran;
 };
@@ -74,23 +75,24 @@ private:
 class BreakLineCommand : public Command 
 {
 public:
-    BreakLineCommand(TextView *view, TextModel *model, Cursor *cursor) :
+    BreakLineCommand(TextView* const view, TextModel* const model, Cursor* const cursor) :
     view(view),
     model(model),
     row(cursor->GetCursorY()), 
     col(cursor->GetCursorX()),
     cursor(cursor) {}
 
-    virtual ~BreakLineCommand() {}
+    ~BreakLineCommand() {}
 
-    virtual void Execute();
+    void Execute();
 
-    virtual void UnExecute();
+    void UnExecute();
 
 private:
-    TextView *view;
-    TextModel *model;
-    Cursor *cursor;
+    void AdjustCursor();
+    TextView* const view;
+    TextModel* const model;
+    Cursor* const cursor;
     const int row;
     const int col;
 };
@@ -99,26 +101,25 @@ private:
 class MergeLineCommand : public Command 
 {
 public:
-    MergeLineCommand(TextView *view, TextModel *model, Cursor *cursor) :
+    MergeLineCommand(TextView* const view, TextModel* const model, Cursor* const cursor) :
     view(view),
     model(model),
     row(cursor->GetCursorY()),
     cursor(cursor),
     ran(false) {}
 
+    ~MergeLineCommand() {}
 
-    virtual ~MergeLineCommand() {}
+    void Execute();
 
-    virtual void Execute();
-
-    virtual void UnExecute();
+    void UnExecute();
 
 private:
     void AdjustCursor();
-    TextView *view;
-    TextModel *model;
-    Cursor *cursor;
-    int row;
+    TextView* const view;
+    TextModel* const model;
+    Cursor* const cursor;
+    const int row;
     int col;
     bool ran;
 };
@@ -126,10 +127,11 @@ private:
 class PasteCommand : public Command
 {
 public:
-    PasteCommand(TextView *view, TextModel *model, Cursor *cursor, std::string strToPaste) :
+    PasteCommand(TextView* const view, TextModel* const model, Cursor* const cursor, const std::string strToPaste) :
     view(view),
     model(model),
     strToPaste(strToPaste),
+    cursor(cursor),
     row(cursor->GetCursorY()),
     col(cursor->GetCursorX()) {}
 
@@ -141,12 +143,12 @@ public:
 
 private:
     void AdjustCursor();
-    TextView *view;
-    TextModel *model;
-    Cursor *cursor;
-    int row;
-    int col;
-    std::string strToPaste;
+    TextView* const view;
+    TextModel* const model;
+    Cursor* const cursor;
+    const int row;
+    const int col;
+    const std::string strToPaste;
 };
 
 class CommandSet : public Command 
@@ -159,6 +161,8 @@ public:
     void Execute();
 
     void UnExecute();
+
+    void Refresh() {}
 
     void ExecuteCmd( Command *pCmd);
 

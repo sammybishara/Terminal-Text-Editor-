@@ -35,7 +35,6 @@ void BreakLine :: Update()
 void ChangeMode :: Update()
 {
     char ch = ctrl->GetPressedKey();
-
     if (ctrl->GetPressedKey() == ESC && ctrl->GetMode() == EDIT_MODE) ctrl->ChangeMode(COMMAND_MODE);
     else if (ch == 'i' && ctrl->GetMode() == COMMAND_MODE) ctrl->ChangeMode(EDIT_MODE);
 }
