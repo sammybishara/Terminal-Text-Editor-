@@ -269,10 +269,10 @@ void TextCtrl :: ToggleBorder()
 // Parses the rows and adds the rows to the view. Color is cleared and then view is refreshed
 void TextCtrl :: RefreshText()
 {
-    auto pair = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
+    auto parsedDoc = model->ParseRows(view->GetColNumInView(), view->GetRowNumInView());
     view->InitRows();
     view->ClearColor();
-    view->AddRows(pair.first, pair.second);
+    view->AddRows(parsedDoc);
     view->Refresh();
 }
 

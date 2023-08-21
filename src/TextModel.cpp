@@ -83,10 +83,9 @@ int TextModel :: GetCharCount(int x, int y, int colSize)
 }
 
 // Parses the document
-std::pair<std::vector<std::string>, std::vector<int> > TextModel :: ParseRows(int colSize, int rowSize)
+std::vector<std::pair<int, std::string> > TextModel :: ParseRows(int colSize, int rowSize)
 {
-    std::vector<std::string> ParsedDocument;
-    std::vector<int> lineNumbers;
+    std::vector<std::pair<int, std::string> > ParsedDocument;
     int count = start + 1;
     int rowsFilled = 0;
 
@@ -105,21 +104,21 @@ std::pair<std::vector<std::string>, std::vector<int> > TextModel :: ParseRows(in
             break;
         }
     
-        lineNumbers.push_back(count++);
-        for (int i = 0; i < rowCount - 1; ++i) lineNumbers.push_back(-1);
+        int lineNumber = count;
+        count++;
         rowsFilled += rowCount;
 
         // slices the line by the column size and adds them to the ParsedDocument
         while (line.size() > colSize)
         {
-            ParsedDocument.push_back(line.substr(0, colSize));
+            ParsedDocument.push_back(std::make_pair(lineNumber, line.substr(0, colSize)));
             line = line.substr(colSize);
+            lineNumber = -1;
         }
-        if (document[i].size() == 0) ParsedDocument.push_back(document[i]);
-        else if (line.size() > 0) ParsedDocument.push_back(line);
+        if (document[i].size() == 0) ParsedDocument.push_back(std::make_pair(lineNumber, document[i]));
+        else if (line.size() > 0) ParsedDocument.push_back(std::make_pair(lineNumber, line));
     }
-    std::pair<std::vector<std::string>, std::vector<int> > pair = std::make_pair(ParsedDocument, lineNumbers);
-    return pair;
+    return ParsedDocument;
 }
 
 void TextModel :: MoveDown(int colSize, bool nextLine)

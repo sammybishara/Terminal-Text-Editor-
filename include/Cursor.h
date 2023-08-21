@@ -1,7 +1,7 @@
 #ifndef ECCursor_h
 #define ECCursor_h
 
-#include<utility>
+#include <utility>
 
 // Cursor class for managing the models x and y positions 
 class Cursor

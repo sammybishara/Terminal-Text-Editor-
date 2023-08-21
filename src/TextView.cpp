@@ -22,7 +22,7 @@ TextView :: ~TextView()
 }
 
 // check if a row contains any keywords that need to be highlighted and highlights them 
-void TextView :: AddRow(const std::string &strRow, int row, int colorStart)
+void TextView :: AddRow(const std::string &strRow, int row, int colorStart, int lineNumber)
 {
     std::string word = "";
 
@@ -36,10 +36,10 @@ void TextView :: AddRow(const std::string &strRow, int row, int colorStart)
     TextImp->AddRow(strRow);
 }
 
-void TextView :: AddRows(std::vector<std::string> rows, std::vector<int> lineNumbers)
+void TextView :: AddRows(std::vector<std::pair<int, std::string> > rows)
 {
     int index = 0;
-    for (auto row : rows) AddRow(row, index++, 0);
+    for (auto row : rows) AddRow(row.second, index++, 0, row.first);
 }
 
 void TextView :: AddStatusRow( const std::string &statusMsgLeft, const std::string &statusMsgRight, bool fBlackBackground )
@@ -48,68 +48,64 @@ void TextView :: AddStatusRow( const std::string &statusMsgLeft, const std::stri
 }
 
 // highlights the line numbers
-void LineNumberTextView :: AddRow(const std::string &strRow, int row, int colorStart)
+void LineNumberTextView :: AddRow(const std::string &strRow, int row, int colorStart, int lineNumber)
 {
-    if (colorStart != -1) TextViewDec::SetColor(row, colorStart, colorStart + 6, TEXT_COLOR_MAGENTA);
-    TextViewDec::AddRow(strRow, row, colorStart + 7);
+    if (lineNumber != -1) TextViewDec::SetColor(row, colorStart, colorStart + 6, TEXT_COLOR_MAGENTA);
+    TextViewDec::AddRow(strRow, row, colorStart + 7, lineNumber);
 }
 
-void LineNumberTextView :: AddRows(std::vector<std::string> rows, std::vector<int> lineNumbers)
+void LineNumberTextView :: AddRows(std::vector<std::pair<int, std::string> > rows)
 {
     int index = 0;
-    std::vector<std::string> embellishedDoc = Embellish(rows, GetColNumInView(), lineNumbers);
-    for (auto row : embellishedDoc) AddRow(row, index++, 0);
+    std::vector<std::pair<int, std::string> > embellishedDoc = Embellish(rows, GetColNumInView());
+    for (auto row : embellishedDoc) AddRow(row.second, index++, 0, row.first);
 }
 
-std::vector<std::string> LineNumberTextView :: Embellish(std::vector<std::string> &rows, int screenWidth, std::vector<int> &lineNumbers)
+std::vector<std::pair<int, std::string> > LineNumberTextView :: Embellish(std::vector<std::pair<int, std::string> > &rows, int screenWidth)
 {
-    std::vector<std::string> embellishedDoc = TextViewDec::Embellish(rows, screenWidth, lineNumbers);
+    std::vector<std::pair<int, std::string> > embellishedDoc = TextViewDec::Embellish(rows, screenWidth);
 
-    if (embellishedDoc.size() != lineNumbers.size()) return embellishedDoc;
-
-    for (unsigned int i = 0; i < lineNumbers.size(); ++i)
+    for (unsigned int i = 0; i < embellishedDoc.size(); ++i)
     {
-       if (lineNumbers[i] == -1 ) embellishedDoc[i] = std::string("       ") + embellishedDoc[i];
+       if (embellishedDoc[i].first == -1 ) embellishedDoc[i].second = std::string("       ") + embellishedDoc[i].second;
        else
        {
-            std::string lineNumber = std::to_string(lineNumbers[i]);
-            embellishedDoc[i] = std::string(6 - lineNumber.size(), ' ') + lineNumber + std::string(" ") + embellishedDoc[i];
+            std::string lineNumber = std::to_string(embellishedDoc[i].first);
+            embellishedDoc[i].second = std::string(6 - lineNumber.size(), ' ') + lineNumber + std::string(" ") + embellishedDoc[i].second;
        }
     }
     return embellishedDoc;
 }
 
 // Text view with Borders
-void BorderTextView :: AddRow(const std::string &strRow, int row, int colorStart)
+void BorderTextView :: AddRow(const std::string &strRow, int row, int colorStart, int lineNumber)
 {
-    if (colorStart != -1) TextViewDec::AddRow(strRow, row, colorStart + 2);
-    else TextViewDec::AddRow(strRow, row, -1);
+    if (lineNumber != -1) TextViewDec::AddRow(strRow, row, colorStart + 2, lineNumber);
+    else TextViewDec::AddRow(strRow, row, -1, lineNumber);
 }
-void BorderTextView :: AddRows(std::vector<std::string> rows, std::vector<int> lineNumbers)
+
+void BorderTextView :: AddRows(std::vector<std::pair<int, std::string> > rows)
 {
     int index = 0;
-    std::vector<std::string> embellishedDoc = Embellish(rows, GetColNumInView(), lineNumbers);
+    std::vector<std::pair<int, std::string> > embellishedDoc = Embellish(rows, GetColNumInView());
     // signals add row to color entire top portion of boarder
-    for (std::string row : embellishedDoc) AddRow(row, index++, 0);
+    for (auto row : embellishedDoc) AddRow(row.second, index++, 0, row.first);
 }
 
-std::vector<std::string> BorderTextView :: Embellish(std::vector<std::string> &rows, int screenWidth, std::vector<int> &lineNumbers)
+std::vector<std::pair<int, std::string> > BorderTextView :: Embellish(std::vector<std::pair<int, std::string> > &rows, int screenWidth)
 {
-    std::vector<std::string> embellishedDoc = TextViewDec::Embellish(rows, screenWidth, lineNumbers);
+    std::vector<std::pair<int, std::string> > embellishedDoc = TextViewDec::Embellish(rows, screenWidth);
     screenWidth += TextViewDec::GetColsOccupied();
 
-    for (std::string &row : embellishedDoc)
+    for (auto &row : embellishedDoc)
     {
-        row = std::string("| ") + row + std::string(screenWidth - (int)row.size(), ' ') + (" |");
+        row.second = std::string("| ") + row.second + std::string(screenWidth - (int)row.second.size(), ' ') + (" |");
     }
     // add boarders
     std::string topBoarder(screenWidth + 4, '_');
     std::string bottomBoarder(screenWidth + 4, '-');
-    embellishedDoc.insert(embellishedDoc.begin(), topBoarder);
-    embellishedDoc.push_back(bottomBoarder);
-    // adjusts line numbers for boarders
-    lineNumbers.insert(lineNumbers.begin(), -1);
-    lineNumbers.push_back(-1);
+    embellishedDoc.insert(embellishedDoc.begin(), std::make_pair(-1, topBoarder));
+    embellishedDoc.push_back(std::make_pair(-1, bottomBoarder));
     
     return embellishedDoc;
 }

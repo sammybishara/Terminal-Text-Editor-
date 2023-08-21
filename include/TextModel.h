@@ -8,6 +8,7 @@
 #include <utility>
 #include <math.h>
 #include <cctype>
+#include <utility>
 
 
 class TextModel 
@@ -51,7 +52,7 @@ public:
     int GetCharCount(int x, int y, int colSize);
 
     // Parses the document to fit the screen  
-    std::pair<std::vector<std::string>, std::vector<int> > ParseRows(int colSize, int rowSize);
+    std::vector<std::pair<int, std::string> > ParseRows(int colSize, int rowSize);
 
     // returns the current row
     std::string GetRow(int row) {return document[row];}

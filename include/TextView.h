@@ -9,6 +9,7 @@
 #include <sstream>
 #include <algorithm>
 #include <cmath>
+#include <utility>
 
 class TextView 
 {
@@ -35,12 +36,12 @@ public:
     virtual void InitRows() { TextImp->InitRows(); }
     
     // Add an entire row to the view
-    virtual void AddRow(const std::string &strRow, int row, int colorStart);
+    virtual void AddRow(const std::string &strRow, int row, int colorStart, int lineNumber);
     
     // ADDS an entire set of Rows
-    virtual void AddRows(std::vector<std::string> rows, std::vector<int> lineNumbers);
+    virtual void AddRows(std::vector<std::pair<int, std::string> > rows);
 
-    virtual std::vector<std::string> Embellish(std::vector<std::string> &rows, int screenWidth, std::vector<int> &lineNumbers) { return rows; }
+    virtual std::vector<std::pair<int, std::string> > Embellish(std::vector<std::pair<int, std::string> > &rows, int screenWidth) { return rows; }
 
     // Get number of rows in view
     virtual int GetRowNumInView() const { return TextImp->GetRowNumInView();}
@@ -60,9 +61,6 @@ public:
     // Sets the x position of the cursor
     virtual void SetCursorX(int pos) { TextImp->SetCursorX(pos); }
     
-    // Set the cursor position x and y coordinate
-    // virtual void SetCursors(int x, int y, int charCount, int start, int tabCount);
-
     // clears status rows
     virtual void ClearStatusRows() { TextImp->ClearStatusRows(); }
     
@@ -127,20 +125,20 @@ public:
     void InitRows() { view->InitRows(); }
     
     // Add an entire row to the view
-    virtual void AddRow(const std::string &strRow, int row, int colorStart) 
+    virtual void AddRow(const std::string &strRow, int row, int colorStart, int lineNumber) 
     {
-        view->AddRow(strRow, row, colorStart);
+        view->AddRow(strRow, row, colorStart, lineNumber);
     }
     
     // ADDS an entire set of Rows
-    virtual void AddRows(std::vector<std::string> rows, std::vector<int> lineNumbers)
+    virtual void AddRows(std::vector<std::pair<int, std::string>> rows)
     {
-        view->AddRows(rows, lineNumbers);
+        view->AddRows(rows);
     }
 
-    virtual std::vector<std::string> Embellish(std::vector<std::string> &rows, int screenWidth, std::vector<int> &lineNumbers) 
+    virtual std::vector<std::pair<int, std::string> > Embellish(std::vector<std::pair<int, std::string> > &rows, int screenWidth)
     {
-        return view->Embellish(rows, screenWidth, lineNumbers);
+        return view->Embellish(rows, screenWidth);
     }
 
     // Get number of rows in view
@@ -158,9 +156,6 @@ public:
     void SetCursorY(int pos) { view->SetCursorY(pos); }
 
     void SetCursorX(int pos) { view->SetCursorX(pos); }
-    
-    // Set the cursor position x and y coordinate
-    // void SetCursors(int x, int y, int charCount, int start, int tabCount) { view->SetCursors(x, y, charCount, start, tabCount); }
 
     // clears status rows
     void ClearStatusRows() { view->ClearStatusRows(); }
@@ -209,21 +204,18 @@ public:
     virtual ~LineNumberTextView() {}
 
     // Add an entire row to the view
-    void AddRow(const std::string &strRow, int row, int colorStart);
+    void AddRow(const std::string &strRow, int row, int colorStart, int lineNumber);
     
-    // ADDS an entire set of Rows
-    void AddRows(std::vector<std::string> rows, std::vector<int> lineNumbers);
+    // Adds an entire set of Rows
+    void AddRows(std::vector<std::pair<int, std::string> > rows);
 
-    std::vector<std::string> Embellish(std::vector<std::string> &rows, int screenWidth, std::vector<int> &lineNumbers);
+    std::vector<std::pair<int, std::string> > Embellish(std::vector<std::pair<int, std::string> > &rows, int screenWidth);
 
     // Get number of rows in view
     int GetRowNumInView() const { return TextViewDec::GetRowNumInView(); }
     
     // Get number of columns in view
     int GetColNumInView() const {  return TextViewDec::GetColNumInView() - 7; }
-    
-    // Set the cursor position x and y coordinate
-    // void SetCursors(int x, int y, int charCount, int start, int tabCount);
 
     int XOffset() { return TextViewDec::XOffset() + 7;}
 
@@ -243,12 +235,12 @@ public:
     virtual ~BorderTextView() {}
     
     // Add an entire row to the view
-    void AddRow(const std::string &strRow, int row, int colorStart);
+    void AddRow(const std::string &strRow, int row, int colorStart, int lineNumber);
     
     // ADDS an entire set of Rows
-    void AddRows(std::vector<std::string> rows, std::vector<int> lineNumbers);
+    void AddRows(std::vector<std::pair<int, std::string> > rows);
 
-    std::vector<std::string> Embellish(std::vector<std::string> &rows, int screenWidth, std::vector<int> &lineNumbers);
+    std::vector<std::pair<int, std::string> > Embellish(std::vector<std::pair<int, std::string> > &rows, int screenWidth);
 
     // Get number of rows in view
     int GetRowNumInView() const { return (TextViewDec::GetRowNumInView() - 2); }
