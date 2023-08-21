@@ -59,19 +59,21 @@ void TextModel :: Paste(const std::string strToPaste, const int x, const int y)
     document[y] = document[y].insert(x, strToPaste);
 }
 
+// erases a row on screen
 void TextModel :: RemoveRow(const int x, const int y, const int size)
 {
     document[y].erase(x, size);
 }
 
+// returns the character count for adjusting cursors
 int TextModel :: GetCharCount(int x, int y, int colSize)
 {
     int index = start;
-    int totalCount = x;
+    int totalCount = x + GetTabAdjustment(y, x);
 
     while (index < y)
     {
-        int charCount = document[index].size();
+        int charCount = ReplaceTabs(document[index]).size();
         totalCount += charCount;
 
         if (charCount % colSize > 0) totalCount -= charCount % colSize;
@@ -80,6 +82,7 @@ int TextModel :: GetCharCount(int x, int y, int colSize)
     return totalCount;
 }
 
+// Parses the document
 std::pair<std::vector<std::string>, std::vector<int> > TextModel :: ParseRows(int colSize, int rowSize)
 {
     std::vector<std::string> ParsedDocument;
@@ -89,10 +92,11 @@ std::pair<std::vector<std::string>, std::vector<int> > TextModel :: ParseRows(in
 
     for (unsigned int i = start; i < document.size(); ++i)
     {
-        std::string line = document[i];
+        // replaces the tabs in the string for the view 
+        std::string line = ReplaceTabs(document[i]);
         
         // get the amount of rows the cur line will occupy
-        int rowCount = GetRowsOccupied(i, colSize);
+        int rowCount = GetRowsOccupied(line, colSize);
 
         // if new line occupies more space than is available, break
         if (rowCount + rowsFilled > rowSize) 
@@ -124,12 +128,12 @@ void TextModel :: MoveDown(int colSize, bool nextLine)
 
     // Get the rows occupied by the new row that is visible when the screen moves down
     int rows;
-    (nextLine) ? rows = GetRowsOccupied(ended + 1, colSize) : rows = GetRowsOccupied(ended, colSize);
+    (nextLine) ? rows = GetRowsOccupied(document[ended + 1], colSize) : rows = GetRowsOccupied(document[ended], colSize);
     // moves the start index forward until there is enough space for the rows occupied by the new line 
     while (rows > 0)
     {
         // Get the rows occupied at the start index 
-        int rowCount = GetRowsOccupied(start, colSize);
+        int rowCount = GetRowsOccupied(document[start], colSize);
         rows -= rowCount;
         start++;
     }
@@ -141,12 +145,53 @@ void TextModel :: MoveUp()
 }
 
 // returns the rows occupied given the column size of the screen 
-int TextModel :: GetRowsOccupied(int lineNum, int colSize)
+int TextModel :: GetRowsOccupied(std::string &line, int colSize)
 {
-    if (colSize == 0 || lineNum >= document.size() || lineNum < 0) return -1;
-    std::string line = document[lineNum];
-    int rowCount = static_cast<int>(std::floor(line.size() / colSize));
+    if (colSize == 0) return -1;
+    int rowCount = (line.size() / colSize);
     if (line.size() == 0 || line.size() % colSize != 0) rowCount++;
-
     return rowCount;
+}
+
+// Replaces all tabs in the given line
+// if there are no alphanumeric characters before the tab, tab is replaces with 8 spaces 
+// else the tab character is replaces with 1 spaces
+std::string TextModel :: ReplaceTabs(const std::string &line)
+{
+    bool charFound = false;
+    std::string lineWithoutTabs;
+    for (char ch : line)
+    {
+        if (ch == '\t')
+        {
+            if (charFound) lineWithoutTabs += ' ';
+            else lineWithoutTabs += "        ";
+        }
+        else 
+        {
+            if (std::isalnum(ch)) charFound = true;
+            lineWithoutTabs += ch;
+        }
+    }
+    return lineWithoutTabs;
+}
+
+// Returns Tab adjustment for on screen cursro
+// If there are no alphanumeric characters before the tab characters,
+// then the cursor adjustment is incremented by 7. 
+int TextModel :: GetTabAdjustment(const int &row, const int &col)
+{
+    bool charFound = false;
+    std::string line = document[row];
+    int count = 0;
+
+    for (unsigned int i = 0; i <= col; ++i)
+    {
+        if (line[i] == '\t' && !charFound) count += 7;
+        else 
+        {
+            if (std::isalnum(line[i])) charFound = true;
+        }
+    }
+    return count;
 }

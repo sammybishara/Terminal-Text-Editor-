@@ -280,7 +280,7 @@ void TextCtrl :: RefreshText()
 void TextCtrl :: RefreshCursor()
 {
     int charCount = model->GetCharCount(cursor->GetCursorX(), cursor->GetCursorY(), view->GetColNumInView());
-    std::pair<int, int> pos = cursor->ConvertCursors(charCount, view->GetColNumInView(), model->GetStart(), view->YOffset(), view->XOffset());
+    std::pair<int, int> pos = cursor->ConvertCursors(charCount, view->GetColNumInView(), model->GetStart(), view->YOffset(), view->XOffset(), model->GetTabAdjustment(cursor->GetCursorY(), cursor->GetCursorX()));
     view->SetCursorY(pos.first);
     view->SetCursorX(pos.second);
 }

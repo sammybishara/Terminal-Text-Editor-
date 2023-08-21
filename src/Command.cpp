@@ -13,14 +13,13 @@ void InsertTextCommand :: UnExecute()
     AdjustCursor();
 }
 
-
 void InsertTextCommand :: AdjustCursor()
 {
     // if y is in the current row and x is greater than size of current row, change x to size of the current row
     if (cursor->GetCursorY() == row && cursor->GetCursorX() > model->GetRow(row).size()) cursor->SetCursorX(model->GetRow(row).size());
 
     int charCount = model->GetCharCount(cursor->GetCursorX(), cursor->GetCursorY(), view->GetColNumInView());
-    std::pair<int, int> pos = cursor->ConvertCursors(charCount, view->GetColNumInView(), model->GetStart(), view->YOffset(), view->XOffset());
+    std::pair<int, int> pos = cursor->ConvertCursors(charCount, view->GetColNumInView(), model->GetStart(), view->YOffset(), view->XOffset(), model->GetTabAdjustment(cursor->GetCursorY(), cursor->GetCursorX()));
     view->SetCursorY(pos.first);
     view->SetCursorX(pos.second); 
 }
@@ -96,6 +95,7 @@ void PasteCommand :: UnExecute()
     model->RemoveRow(col, row, strToPaste.size());
 }
 
+// Destructor clears all the Command sets 
 CommandSet :: ~CommandSet()
 {  
     for (unsigned int i = 0; i < commands.size(); ++i) delete commands[i];

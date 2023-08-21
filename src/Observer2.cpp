@@ -7,6 +7,7 @@ void AddTextObserver :: Update()
 {
     char ch = ctrl->GetPressedKey(); 
     if ((ch >= ' ' && ch <= '~')  && ctrl->GetMode() == EDIT_MODE) ctrl->AddChar(ch);
+    else if (ch == '\t' && ctrl->GetMode() == EDIT_MODE) ctrl->AddChar(ch);
 }
 
 void RemoveTextObserver :: Update()

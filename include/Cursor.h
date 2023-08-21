@@ -1,11 +1,9 @@
-
-
 #ifndef ECCursor_h
 #define ECCursor_h
 
 #include<utility>
 
-// cursor class for managing the models x and y positions 
+// Cursor class for managing the models x and y positions 
 class Cursor
 {
 public:
@@ -31,14 +29,11 @@ public:
 
     int GetCursorY() { return y;}
 
-    std::pair<int, int> ConvertCursors(int charCount, int colSize, int start, int yOffset, int xOffset);
+    // Converts the x and y cursor used to index the document into the onscreen cursors
+    std::pair<int, int> ConvertCursors(int charCount, int colSize, int start, int yOffset, int xOffset, int tabAdjustment);
 
 private:
     unsigned int x;
     unsigned int y;
 };
-
-
-
-
 #endif
