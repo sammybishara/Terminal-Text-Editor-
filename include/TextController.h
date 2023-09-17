@@ -9,6 +9,7 @@
 #include <fstream>
 #include <string>
 #include "Cursor.h"
+#include <utility>
 
 class ECTextCtrl;
 
@@ -80,6 +81,9 @@ public:
 
     // Toggles the boarders
     void ToggleBorder();
+
+    // Calls the cursor object to convert the document cursors to on screen cursors
+    std::pair<int, int> ConvertCursor();
 
 private:
     // removes a char

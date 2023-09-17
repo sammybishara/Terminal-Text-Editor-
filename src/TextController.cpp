@@ -57,14 +57,12 @@ void TextCtrl :: AddChar(const char ch)
     cmdSet->ExecuteCmd(addText);
     RefreshText();
 
-    int y = view->GetCursorY();
-    int x = view->GetCursorX();
+    // retrive on screen cursors
+    int x, y;
+    std::tie(y, x) = ConvertCursor();
 
     // if cursor is at the bottom right corner Scroll the view down to show the continued portion of the wrapped line
-    if (view->GetRowNumInView() - 1  + view->YOffset() == y  && x ==  view->GetColNumInView() - 1  + view->XOffset())
-    {
-        ScrollDown(false);
-    }
+    if (view->GetRowNumInView() - 1  == y  && x == view->GetColNumInView() - 1) ScrollDown(false);
     // moves cursor right over by 1
     MoveRight();
 }
@@ -279,9 +277,15 @@ void TextCtrl :: RefreshText()
 // Screen Cursors are recalculated and set in the view
 void TextCtrl :: RefreshCursor()
 {
-    int charCount = model->GetCharCount(cursor->GetCursorX(), cursor->GetCursorY(), view->GetColNumInView());
-    std::pair<int, int> pos = cursor->ConvertCursors(charCount, view->GetColNumInView(), model->GetStart(), view->YOffset(), view->XOffset(), model->GetTabAdjustment(cursor->GetCursorY(), cursor->GetCursorX()));
+    std::pair<int, int> pos = ConvertCursor();
     view->SetCursorY(pos.first);
     view->SetCursorX(pos.second);
+}
+
+// Gets the current positions from the cursor
+std::pair<int, int> TextCtrl :: ConvertCursor()
+{
+    int charCount = model->GetCharCount(cursor->GetCursorX(), cursor->GetCursorY(), view->GetColNumInView());
+    return cursor->ConvertCursors(charCount, view->GetColNumInView(), model->GetStart(), view->YOffset(), view->XOffset(), model->GetTabAdjustment(cursor->GetCursorY(), cursor->GetCursorX())); 
 }
 
