@@ -95,6 +95,8 @@ void TextCtrl :: Paste()
     cmdSet->ExecuteCmd(paste);
     commandH->AddCommand(cmdSet);
     cmdSet = NULL;
+    RefreshText();
+    RefreshCursor();
 }
 
 void TextCtrl :: RemoveChar()
@@ -132,17 +134,16 @@ void TextCtrl :: MoveDown()
 
     int endOfPage = model->GetEnd();
     // moves y down if possible, checks if x is greater than new row's size, if it set it to the size of the new row
-    if (cursor->GetCursorY() + 1 < model->GetSize()) cursor->IncrementY();
+    if (cursor->GetCursorY() + 1 < model->GetSize()) cursor->SetCursorY(cursor->GetCursorY() + 1);
     if (model->GetRow(cursor->GetCursorY()).size() < cursor->GetCursorX()) cursor->SetCursorX(model->GetRow(cursor->GetCursorY()).size());
 
     if (cursor->GetCursorY() > endOfPage) ScrollDown(true);
-    else RefreshCursor();
+    RefreshCursor();
 }
 
 void TextCtrl :: ScrollDown(bool nextLine)
 {
     model->MoveDown(view->GetColNumInView(), nextLine);
-    RefreshCursor();
     RefreshText();
 }
 
@@ -280,6 +281,7 @@ void TextCtrl :: RefreshCursor()
     std::pair<int, int> pos = ConvertCursor();
     view->SetCursorY(pos.first);
     view->SetCursorX(pos.second);
+    view->Refresh();
 }
 
 // Gets the current positions from the cursor
