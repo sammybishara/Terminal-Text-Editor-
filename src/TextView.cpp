@@ -5,15 +5,14 @@ TextView :: TextView()
 {
     TextImp = new ECTextViewImp();
 
-    std::string filename = "keywords.txt";
-    std::ifstream file(filename);
+    std::ifstream file("../src/keywords.txt");
     std::string word;
 
     if (file.is_open())
     {
         while (file >> word) wordsToHighlight.insert(word);
-        file.close();
     }
+    file.close();
 }
 
 TextView :: ~TextView()
