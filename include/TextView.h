@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cmath>
 #include <utility>
+#include <cctype>
 
 class TextView 
 {

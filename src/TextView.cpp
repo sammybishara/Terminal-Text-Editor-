@@ -23,15 +23,23 @@ TextView :: ~TextView()
 // check if a row contains any keywords that need to be highlighted and highlights them 
 void TextView :: AddRow(const std::string &strRow, int row, int colorStart, int lineNumber)
 {
-    std::string word = "";
+    
+    int index = 0;
+    std::istringstream stream(strRow);
+    std::string word;
+    int i = 0, j = 0;
 
-    for (int i = 0; i < strRow.size(); i++)
+    while (j < strRow.length())
     {
-        if (strRow[i] != ' ') word += strRow[i];
-        else word = "";
+        word.clear();
+        while (j < strRow.length() && strRow[j] != ' ') word += strRow[j++];   
+        
+        if (wordsToHighlight.find(word) != wordsToHighlight.end()) TextImp->SetColor(row, i, j, TEXT_COLOR_BLUE); 
 
-        if (wordsToHighlight.find(word) != wordsToHighlight.end()) TextImp->SetColor(row, i - word.size() + 1, i, TEXT_COLOR_BLUE);
+        while (j < strRow.length() && strRow[j] == ' ') j++;
+        i = j;
     }
+    //    if (wordsToHighlight.find(word) != wordsToHighlight.end()) TextImp->SetColor(row, index, index + word.length(), TEXT_COLOR_BLUE);
     TextImp->AddRow(strRow);
 }
 
